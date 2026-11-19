@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)https://eme-dev.github.io/azure-functions-training/fase-00.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure Functions · Fase 0 · Java 21</title>
+<style>
+  :root {
+    --bg-0: #0b1220;
+    --bg-1: #0f172a;
+    --card: #16202f;
+    --card-2: #1b2638;
+    --border: #2a3a52;
+    --border-soft: #22304a;
+    --text: #e6edf7;
+    --text-dim: #93a4bd;
+    --text-mute: #6b7c96;
+    --green: #22c55e;
+    --accent: #38bdf8;
+    --warn: #f59e0b;
+    --radius: 16px;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 50% -200px, #142138 0%, transparent 70%),
+      radial-gradient(800px 400px at 100% 100%, #10243a 0%, transparent 60%),
+      var(--bg-0);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    padding: 0 20px 80px;
+  }
+
+  /* ===== LAYOUT ===== */
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 48px 0 32px;
+    position: relative;
+  }
+  .hero .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(56,189,248,.08);
+    border: 1px solid rgba(56,189,248,.25);
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  .hero .badge .pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(56,189,248,.6);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(56,189,248,.55); }
+    70% { box-shadow: 0 0 0 10px rgba(56,189,248,0); }
+    100% { box-shadow: 0 0 0 0 rgba(56,189,248,0); }
+  }
+  .hero h1 {
+    font-size: clamp(1.7rem, 4vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    background: linear-gradient(180deg, #fff 0%, #b9cbe3 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 10px;
+  }
+  .hero .sub {
+    color: var(--text-dim);
+    font-size: 1.02rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .hero .sub strong { color: var(--text); font-weight: 600; }
+
+  /* ===== PROGRESO ===== */
+  .progress-panel {
+    margin-top: 30px;
+    background: linear-gradient(180deg, var(--card) 0%, #131d2c 100%);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.35);
+  }
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .progress-top .label {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-mute);
+    font-weight: 700;
+  }
+  .progress-top .count {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .progress-top .count small { color: var(--text-mute); font-size: .85rem; }
+  .bar {
+    height: 10px;
+    background: #0b1626;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #0ea5e9, #22c55e);
+    transition: width .5s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 12px rgba(34,197,94,.4);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: #0e1828;
+    border: 1px solid var(--border-soft);
+    padding: 5px 11px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: all .25s;
+  }
+  .chip .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--border);
+    transition: all .25s;
+  }
+  .chip:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .chip.done {
+    color: #86efac;
+    border-color: rgba(34,197,94,.35);
+    background: rgba(34,197,94,.07);
+  }
+  .chip.done .dot {
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(34,197,94,.7);
+  }
+
+  /* ===== TOOLBAR ===== */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 28px 0 8px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font: inherit;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    background: var(--card-2);
+  }
+  .btn:active { transform: scale(.97); }
+  .btn.danger:hover { border-color: #ef4444; color: #fca5a5; }
+
+  /* ===== TIMELINE ===== */
+  .steps {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 16px;
+    padding-bottom: 14px;
+  }
+  .step:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 25px;
+    top: 58px;
+    bottom: 6px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--border) 0%, transparent 100%);
+    z-index: 0;
+  }
+  .marker {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--card);
+    border: 2px solid var(--border);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--step-accent, var(--accent));
+    position: relative;
+    z-index: 1;
+    transition: all .3s;
+    flex-shrink: 0;
+  }
+  .marker .tick { display: none; font-size: 1.3rem; }
+  .step.done .marker {
+    background: var(--green);
+    border-color: var(--green);
+    color: #06210f;
+    box-shadow: 0 0 20px rgba(34,197,94,.35);
+  }
+  .step.done .marker .num { display: none; }
+  .step.done .marker .tick { display: block; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color .3s, box-shadow .3s, background .3s;
+  }
+  .step.open .card {
+    border-color: var(--step-accent, var(--accent));
+    box-shadow: 0 14px 40px rgba(0,0,0,.4);
+    background: linear-gradient(180deg, var(--card-2) 0%, var(--card) 100%);
+  }
+  .step.done .card { border-color: rgba(34,197,94,.35); }
+
+  .card-head {
+    width: 100%;
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px 22px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .card-head:hover { background: rgba(255,255,255,.02); }
+  .head-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .head-title {
+    font-size: 1.06rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+  }
+  .head-title .tag {
+    font-size: .66rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(245,158,11,.13);
+    color: var(--warn);
+    border: 1px solid rgba(245,158,11,.3);
+  }
+  .head-title .tag.core {
+    background: rgba(56,189,248,.1);
+    color: var(--accent);
+    border-color: rgba(56,189,248,.3);
+  }
+  .head-title .tag.ok {
+    background: rgba(34,197,94,.1);
+    color: #86efac;
+    border-color: rgba(34,197,94,.3);
+  }
+  .head-sub {
+    font-size: .83rem;
+    color: var(--text-mute);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chev {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    background: #0e1828;
+    border: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    transition: all .3s;
+    font-size: .8rem;
+  }
+  .step.open .chev {
+    transform: rotate(180deg);
+    background: var(--step-accent, var(--accent));
+    color: #06210f;
+    border-color: var(--step-accent, var(--accent));
+  }
+
+  /* Expand animation via grid-rows trick */
+  .card-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .35s ease;
+  }
+  .step.open .card-body { grid-template-rows: 1fr; }
+  .body-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+  .body-pad {
+    padding: 0 22px 6px;
+  }
+
+  /* ===== CONTENIDO ===== */
+  .body-pad ul.checks {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 4px 0 14px;
+  }
+  .body-pad ul.checks li {
+    position: relative;
+    padding-left: 24px;
+    font-size: .92rem;
+    color: var(--text-dim);
+  }
+  .body-pad ul.checks li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--step-accent, var(--accent));
+  }
+  .body-pad ul.checks li strong { color: var(--text); font-weight: 600; }
+  .body-pad a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(56,189,248,.4);
+  }
+  .body-pad a:hover { border-bottom-style: solid; }
+
+  /* Código */
+  .code {
+    position: relative;
+    background: #08111d;
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    margin: 8px 0 12px;
+    overflow: hidden;
+  }
+  .code pre {
+    font-family: var(--mono);
+    font-size: .83rem;
+    line-height: 1.7;
+    color: #c9dbf0;
+    padding: 13px 16px;
+    padding-right: 76px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .code .copy {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font: inherit;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--text-dim);
+    background: #121e30;
+    border: 1px solid var(--border-soft);
+    padding: 5px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .code .copy:hover { color: var(--text); border-color: var(--accent); }
+  .code .copy.copied {
+    color: #06210f;
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  /* Callouts */
+  .callout {
+    display: flex;
+    gap: 12px;
+    padding: 13px 15px;
+    border-radius: 10px;
+    font-size: .87rem;
+    line-height: 1.55;
+    margin: 12px 0;
+    border: 1px solid;
+  }
+  .callout .ico { flex-shrink: 0; font-size: 1.05rem; line-height: 1.3; }
+  .callout.tip {
+    background: rgba(56,189,248,.06);
+    border-color: rgba(56,189,248,.25);
+    color: #bae6fd;
+  }
+  .callout.warn {
+    background: rgba(245,158,11,.07);
+    border-color: rgba(245,158,11,.3);
+    color: #fcd98a;
+  }
+  .callout.good {
+    background: rgba(34,197,94,.07);
+    border-color: rgba(34,197,94,.3);
+    color: #a7f3c0;
+  }
+  .callout code {
+    font-family: var(--mono);
+    font-size: .82em;
+    background: rgba(0,0,0,.3);
+    padding: 1px 6px;
+    border-radius: 5px;
+  }
+  .callout strong { color: #fff; }
+
+  .expected {
+    font-size: .84rem;
+    color: var(--text-mute);
+    margin: 2px 0 10px;
+    padding-left: 12px;
+    border-left: 2px solid var(--step-accent, var(--accent));
+  }
+  .expected strong { color: #86efac; font-weight: 600; }
+
+  /* Footer card: checkbox */
+  .card-foot {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 22px 18px;
+  }
+  .check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    background: #0e1828;
+    transition: all .2s;
+  }
+  .check:hover { border-color: var(--step-accent, var(--accent)); color: var(--text); }
+  .check input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .check:focus-within { outline: 3px solid var(--accent); outline-offset: 4px; }
+  .card:not(:has(.card-body)) { padding: 22px; }
+  .help { margin: 24px 0; }
+  .help h2 { font-size: 1.2rem; margin-bottom: 12px; }
+  .help details { border-top: 1px solid var(--border); padding: 12px 0; }
+  .help summary { cursor: pointer; font-weight: 600; }
+  .help p { color: var(--text-dim); margin-top: 8px; font-size: .9rem; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+  .check .box {
+    width: 18px; height: 18px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    display: grid; place-items: center;
+    transition: all .2s;
+    font-size: .7rem;
+    color: transparent;
+  }
+  .check input:checked ~ .box {
+    background: var(--green);
+    border-color: var(--green);
+    color: #06210f;
+  }
+  .check input:checked ~ .txt { color: #86efac; }
+
+  /* ===== FOOTER ===== */
+  .foot {
+    margin-top: 46px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border-soft);
+    text-align: center;
+    color: var(--text-mute);
+    font-size: .82rem;
+  }
+  .foot .links {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .foot a { color: var(--text-dim); text-decoration: none; transition: color .2s; }
+  .foot a:hover { color: var(--accent); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    body { padding: 0 14px 60px; }
+    .step { grid-template-columns: 40px 1fr; gap: 12px; }
+    .marker { width: 40px; height: 40px; font-size: .95rem; }
+    .step:not(:last-child)::before { left: 19px; top: 46px; }
+    .card-head { padding: 15px 16px; }
+    .body-pad { padding: 0 16px 4px; }
+    .card-foot { padding: 0 16px 15px; }
+    .head-sub { white-space: normal; }
+    .code pre { font-size: .76rem; padding-right: 66px; }
+    .hero { padding: 34px 0 20px; }
+  }
+
+  @media print {
+    body { background: #fff; color: #111; }
+    .toolbar, .chip, .copy, .chev, .foot .links { display: none !important; }
+    .card-body { grid-template-rows: 1fr !important; }
+    .card { border: 1px solid #ccc; }
+    .code { background: #f4f4f4; border-color: #ddd; }
+    .code pre { color: #111; }
+  }
+
+/* Diseño alternativo: cuaderno de laboratorio */
+:root{--bg-0:#f4f3ed;--bg-1:#fff;--card:#fff;--card-2:#fff;--border:#c7d1ca;--border-soft:#dde3dc;--text:#183b34;--text-dim:#425e55;--text-mute:#52685f;--green:#26735c;--accent:#175f4b;--warn:#8b5d0c;--radius:12px}
+body{background:var(--bg-0);padding:0 28px 48px;line-height:1.7}.wrap{max-width:1220px}.hero{text-align:left;padding:40px 0 28px;border-bottom:1px solid var(--border);margin-bottom:28px}.hero .badge{border:0;border-radius:0;background:none;padding:0;margin-bottom:15px;color:var(--accent)}.hero .badge .pulse{animation:none;box-shadow:none;background:var(--accent)}.hero h1{background:none;color:var(--text);font-size:clamp(30px,4vw,46px);font-weight:700;letter-spacing:-1.6px}.hero .sub{max-width:700px;margin:12px 0 0;font-size:16px}.hero .sub strong{color:var(--accent)}
+.alt-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:34px;align-items:start}.alt-side{position:sticky;top:24px}.progress-panel{margin:0;padding:0;background:none;border:0;border-radius:0;box-shadow:none}.progress-top .label{font-size:11px;color:var(--text-mute)}.progress-top .count{color:var(--accent);font-size:16px}.progress-top .count small{color:var(--text-mute)}.bar{height:6px;background:#dce4dc;border:0}.bar-fill{background:var(--accent);box-shadow:none}.chips{display:flex;flex-direction:column;gap:5px;margin-top:22px}.chip{border:0;border-radius:8px;background:transparent;color:var(--text-dim);font-size:14px;padding:11px 12px;min-height:44px;font-weight:500}.chip::before{content:attr(data-chip);font:12px var(--mono);width:20px;color:var(--text-mute)}.chip .dot{display:none}.chip:hover{transform:none;background:#e7ece4;color:var(--text)}.chip[aria-current="step"]{background:#183f34;color:#fff}.chip[aria-current="step"]::before{color:#c2dacb}.chip.done{background:transparent;border:0;color:var(--accent)}.chip.done::after{content:'✓';margin-left:auto}.chip.done[aria-current]{background:#183f34;color:white}.toolbar{margin:22px 0 0;justify-content:flex-start;gap:7px}.btn{border-color:var(--border);background:transparent;color:var(--text-dim);border-radius:6px;font-size:12px;padding:7px 11px}.btn:hover{color:var(--accent);background:#e6ece4;border-color:var(--accent)}.steps{margin:0;gap:0;display:block;min-width:0}.step{display:block;padding:0;--step-accent:var(--accent)!important}.step::before,.marker{display:none!important}.card{background:var(--card);border:1px solid var(--border-soft);border-radius:12px;box-shadow:none}.step.open .card{background:#fff;border-color:var(--border-soft);box-shadow:0 12px 40px #183f3406}.card-head{padding:27px 30px 16px;cursor:default}.card-head:hover{background:none}.head-title{font-size:25px;letter-spacing:-.7px}.head-sub{color:var(--text-mute);font-size:14px;margin-top:3px;white-space:normal}.head-title .tag{font-size:10px;background:#f8ecd5;color:#815807;border:0;border-radius:4px;padding:3px 7px;letter-spacing:.5px}.head-title .tag.core{background:#e7f0e7;color:var(--accent);border:0}.head-title .tag.ok{background:#e7f0e7;color:var(--accent);border:0}.chev{display:none}.card-body{display:block!important;grid-template-rows:1fr!important}.body-inner{overflow:visible}.body-pad{padding:0 30px 12px}.body-pad ul.checks{gap:14px;margin:8px 0 20px}.body-pad ul.checks li{font-size:15px;color:var(--text-dim)}.body-pad ul.checks li strong{color:var(--text)}.body-pad ul.checks li::before{background:var(--accent)}.body-pad a{color:#175f4b;border-color:#779c87}.body-pad h3{font-size:22px;border-top:1px solid var(--border-soft);padding-top:23px;margin:24px 0 14px}.body-pad h4{font-size:16px;margin:24px 0 10px}.body-pad p{margin-bottom:10px}.code{background:#15392f;border:0;border-radius:8px;margin:14px 0}.code pre{color:#edf6ed;font-size:13px;padding:44px 17px 17px;white-space:pre-wrap;overflow-wrap:anywhere}.code::before{content:'COMANDO / CONFIGURACIÓN';position:absolute;top:13px;left:17px;color:#bed5c4;font-size:9px;letter-spacing:1px}.code .copy{background:#284f41;border-color:#658571;color:#fff;font-size:11px;padding:5px 11px;top:8px}.code .copy:hover{color:white;border-color:white}.code .copy.copied{background:#d2ebc8;color:#143a2e;border-color:#d2ebc8}.expected{color:var(--text-dim);border-color:#94b79b;font-size:13px;padding:8px 12px;background:#f2f6ee;border-radius:0 6px 6px 0}.expected strong{color:var(--accent)}.callout{font-size:13px;border:0;border-radius:8px;padding:15px 17px}.callout.tip{background:#e8f0e5;color:#2b5945}.callout.warn{background:#fbf0da;color:#71521c}.callout.good{background:#e8f3e6;color:#28513b}.callout strong{color:inherit}.callout code{background:#ffffff99}.card-foot{padding:16px 30px 25px;justify-content:flex-start;border-top:1px solid #edf0e9}.check{background:#f4f6ef;color:var(--text-dim);border-color:var(--border-soft);border-radius:6px;padding:10px 14px}.check .box{border-color:#95af9c;border-radius:4px}.check input:checked ~ .box{background:var(--accent);border-color:var(--accent);color:white}.check input:checked ~ .txt{color:var(--accent)}.step.done .card{border-color:#b1cbb4}.alt-intro{margin:0 0 22px}.alt-note{font-size:12px;color:var(--text-mute);margin-top:20px}.alt-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:20px 0 28px}.alt-actions button{font:inherit;font-size:14px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);padding:10px 18px;cursor:pointer;min-height:44px}.alt-actions button:last-child{background:var(--accent);color:white;border-color:var(--accent)}.alt-actions button:disabled{opacity:.4;cursor:default}.alt-actions span{font-size:12px;color:var(--text-mute)}.help{padding:24px!important;margin:0}.help h2{color:var(--text)}.help details{border-color:var(--border-soft)}.help p{color:var(--text-dim)}.foot{color:var(--text-mute);margin-top:32px;text-align:left;border-color:var(--border)}.foot .links{justify-content:flex-start}.foot a{color:var(--accent)}.body-pad code,.help code{overflow-wrap:anywhere}button:focus-visible,a:focus-visible{outline:3px solid #b87915;outline-offset:3px}[hidden]{display:none!important}
+@media(max-width:760px){body{padding:0 16px 30px}.hero{padding:28px 0 22px}.hero h1{letter-spacing:-1px;font-size:32px}.alt-layout{grid-template-columns:1fr;gap:22px}.alt-side{position:static}.chips{flex-direction:row;flex-wrap:wrap;margin-top:14px;gap:5px}.chip{font-size:11px;padding:6px 9px;min-height:36px}.chip::before{width:auto}.toolbar{margin-top:12px}.alt-note{margin-top:10px}.card-head{padding:21px 20px 14px}.head-title{font-size:22px}.body-pad{padding:0 20px 10px}.body-pad ul.checks li{font-size:14px}.card-foot{padding:15px 20px 20px}.alt-actions{margin:16px 0 24px}.alt-actions span{display:none}.code pre{font-size:12px}.help{padding:20px!important}}
+@media print{.alt-side,.alt-actions,.alt-intro{display:none!important}.alt-layout{display:block}.step[hidden]{display:block!important}.card{break-inside:auto;background:white!important}.body-pad,.body-pad ul.checks li,.head-title,.head-sub{color:#111!important}.hero h1{color:#111!important}.code pre{color:#111}.code{background:#eee}.code::before{color:#333}.callout,.expected{color:#111!important;background:#eee!important}.check{display:none}.foot{color:#111}}
+
+
+/* Paleta inspirada en Azure */
+:root{--bg-0:#f3f6fa;--bg-1:#fff;--card:#fff;--card-2:#fff;--border:#c4d2df;--border-soft:#dbe4ed;--text:#16324a;--text-dim:#435d72;--text-mute:#526a7d;--green:#23854a;--accent:#0078d4;--warn:#8a5a08}
+body{background:var(--bg-0)}.hero .badge{color:#0067b6}.hero .badge .pulse{background:#0078d4}.hero .sub strong{color:#0067b6}.bar{background:#dce5ef}.bar-fill{background:#0078d4}.progress-top .count{color:#0067b6}.chip:hover{background:#e4effa;color:#005a9e}.chip[aria-current="step"],.chip.done[aria-current]{background:#0078d4;color:white}.chip[aria-current="step"]::before{color:#e3f2ff}.chip.done{color:#23743f}.chip.done::after{color:#23743f}.chip.done[aria-current]::after{color:white}.btn:hover{background:#e6f1fb;border-color:#0078d4;color:#005a9e}.step.open .card{box-shadow:0 12px 40px #16324a06}.head-title .tag.core{background:#e6f2fd;color:#0067b6}.head-title .tag.ok{background:#e7f4ea;color:#23743f}.body-pad ul.checks li::before{background:#0078d4}.body-pad a{color:#0067b6;border-color:#7caed5}.code{background:#102d46}.code pre{color:#edf7ff}.code::before{color:#c0d5e7}.code .copy{background:#23465f;border-color:#5f829e;color:white}.code .copy.copied{background:#d9f2df;color:#175e2f;border-color:#d9f2df}.expected{background:#eef5fc;border-color:#72abe0;color:var(--text-dim)}.expected strong{color:#0067b6}.callout.tip{background:#e7f1fb;color:#244e72}.callout.warn{background:#fff3dc;color:#775013}.callout.good{background:#e9f5ec;color:#245b36}.callout code{background:#ffffffb3}.check{background:#f3f7fa}.check input:checked ~ .box{background:#23854a;border-color:#23854a;color:white}.check input:checked ~ .txt{color:#23743f}.step.done .card{border-color:#a5cfb0}.alt-actions button:last-child{background:#0078d4;border-color:#0078d4}.alt-actions button:last-child:hover{background:#0067b6}.alt-actions button:first-child:hover:not(:disabled){background:#e7f1fb;border-color:#0078d4}.foot a{color:#0067b6}
+
+
+/* Paleta oscura del primer diseño, con navegación por etapas */
+:root{color-scheme:dark;--bg-0:#0b1220;--bg-1:#0f172a;--card:#16202f;--card-2:#1b2638;--border:#364b66;--border-soft:#2a3a52;--text:#e6edf7;--text-dim:#b5c4d8;--text-mute:#9eafc6;--green:#22c55e;--accent:#38bdf8;--warn:#f59e0b}
+body{background:radial-gradient(1000px 500px at 60% -220px,#142b46 0%,transparent 75%),#0b1220}.hero{border-color:var(--border-soft)}.hero h1{color:#e6edf7}.hero .badge,.hero .sub strong{color:#38bdf8}.hero .badge .pulse{background:#38bdf8}.progress-top .count{color:#38bdf8}.bar{background:#1c2c42}.bar-fill{background:#38bdf8}.chip:hover{background:#172a40;color:#e6edf7}.chip[aria-current="step"],.chip.done[aria-current]{background:#163e59;color:#e8f7ff}.chip[aria-current="step"]::before{color:#a5ddf8}.chip.done{color:#86efac}.chip.done::after,.chip.done[aria-current]::after{color:#86efac}.btn{background:#16202f;color:#b5c4d8}.btn:hover{background:#1b2d43;color:#e6edf7;border-color:#38bdf8}.card,.step.open .card{background:#16202f;border-color:#2a3a52;box-shadow:none}.head-title{color:#e6edf7}.head-title .tag{background:#49371d;color:#fcd98a}.head-title .tag.core{background:#16394c;color:#7dd3fc}.head-title .tag.ok{background:#1b3c2b;color:#86efac}.body-pad ul.checks li::before{background:#38bdf8}.body-pad a,.foot a{color:#7dd3fc;border-color:#477f9f}.code{background:#08111d}.code pre{color:#c9dbf0}.code::before{color:#9db3cc}.code .copy{background:#16283b;border-color:#405b76;color:#d9e9f8}.code .copy:hover{border-color:#38bdf8;color:white}.code .copy.copied{background:#22c55e;color:#06210f;border-color:#22c55e}.expected{background:#102a3c;border-color:#38bdf8;color:#b9cee2}.expected strong{color:#7dd3fc}.callout.tip{background:#102b3e;color:#bae6fd}.callout.warn{background:#392d1a;color:#fcd98a}.callout.good{background:#153425;color:#a7f3c0}.callout code{background:#08111d;color:#dceafa}.card-foot{border-color:#2a3a52}.check{background:#0e1828;color:#b5c4d8;border-color:#364b66}.check .box{border-color:#6a829d}.check input:checked ~ .box{background:#22c55e;border-color:#22c55e;color:#06210f}.check input:checked ~ .txt{color:#86efac}.step.done .card{border-color:#356847}.alt-actions button{background:#16202f;color:#e6edf7;border-color:#364b66}.alt-actions button:last-child{background:#38bdf8;border-color:#38bdf8;color:#082238}.alt-actions button:last-child:hover{background:#7dd3fc}.alt-actions button:first-child:hover:not(:disabled){background:#1b2d43;border-color:#38bdf8}.help{background:#16202f}.help details,.foot{border-color:#2a3a52}button:focus-visible,a:focus-visible,.check:focus-within{outline-color:#fbbf24}
+@media print{:root{color-scheme:light}body{background:white!important;color:#111!important}.hero h1,.hero .sub,.hero .badge,.head-title,.head-sub,.help h2,.help p,.help summary,.foot,.foot a,.body-pad a,.expected strong{color:#111!important}.card,.step.open .card,.help{background:white!important;border-color:#ccc!important}.code{background:#eee!important}.code pre,.code::before{color:#111!important}.callout,.expected{background:#eee!important;color:#111!important}.head-title .tag{background:#eee!important;color:#111!important}}
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="badge"><span class="pulse"></span> Guía interactiva · Windows x64</span>
+    <h1>Instalación del entorno<br>Azure Functions + Java 21</h1>
+    <p class="sub">
+      10 pasos para dejar tu equipo listo para desarrollar y ejecutar funciones
+      en <strong>local</strong> con Java 21, Maven, IntelliJ y Azurite.
+    </p>
+  </header>
+
+<div class="alt-layout"><aside class="alt-side">  <!-- PANEL DE PROGRESO -->
+  <section class="progress-panel">
+    <div class="progress-top">
+      <span class="label">Progreso del taller</span>
+      <span class="count" id="count">0 <small>/ 10</small></span>
+    </div>
+    <div class="bar" role="progressbar" aria-label="Pasos obligatorios completados" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><div class="bar-fill" id="barFill" style="width: 0%;"></div></div>
+    <div class="chips" id="chips">
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-1" data-chip="1" aria-current="step"><span class="dot"></span>Java 21</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-2" data-chip="2"><span class="dot"></span>Maven</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-3" data-chip="3"><span class="dot"></span>Git</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-4" data-chip="4"><span class="dot"></span>IntelliJ</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-5" data-chip="5"><span class="dot"></span>Core Tools</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-6" data-chip="6"><span class="dot"></span>Node.js</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-7" data-chip="7"><span class="dot"></span>Azurite</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-8" data-chip="8"><span class="dot"></span>Azure CLI</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-9" data-chip="9"><span class="dot"></span>Postman</a>
+      <a class="chip" href="https://eme-dev.github.io/azure-functions-training/fase-00.html#step-10" data-chip="10"><span class="dot"></span>Verificación</a>
+    </div>
+  </section>
+
+<div class="toolbar"><button class="btn danger" id="reset">↺ Reiniciar progreso</button></div><p class="alt-note">El progreso se guarda en este navegador. Marca cada etapa después de verificarla.</p></aside><div class="alt-content"><div class="alt-intro"><div class="callout tip"><div><strong>Antes de comenzar.</strong> Windows x64, conexión a Internet y permisos de instalación. Sigue el orden; comprueba Java y Maven cuando tengas Git Bash (etapa 3). Reabre la terminal después de instalar.</div></div>  <!-- PASOS -->
+  <main class="steps" id="steps">
+
+    <!-- 1 · JAVA -->
+    <article class="step open" id="step-1" data-step="1" style="--step-accent:#f97316;">
+      <div class="marker"><span class="num">1</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="true">
+          <span class="head-text">
+            <span class="head-title">Java 21 (Eclipse Temurin) <span class="tag core">Base</span></span>
+            <span class="head-sub">JDK para compilar y ejecutar</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>Descarga <strong>Java 21 (LTS) · Windows · x64 · JDK · MSI</strong> desde <a href="https://adoptium.net/temurin/releases/?version=21&amp;os=windows&amp;arch=x64&amp;package=jdk" target="_blank" rel="noopener">Eclipse Temurin</a>.</li>
+            <li>En <strong>Custom Setup</strong> activa <strong>Add to PATH</strong> y <strong>Set JAVA_HOME variable</strong>.</li>
+            <li>Verifica que <code>JAVA_HOME</code> apunte a la carpeta del JDK (sin <code>\bin</code>).</li>
+          </ul>
+          <div class="code">
+            <pre><code>java -version
+javac -version
+echo "$JAVA_HOME"</code></pre>
+            <button class="copy" data-copy="java -version
+javac -version
+echo &quot;$JAVA_HOME&quot;">Copiar</button>
+          </div>
+          <p class="expected"><strong>Esperado:</strong> Java y javac muestran <strong>21</strong>; JAVA_HOME muestra la carpeta del JDK 21, sin bin al final.</p>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="1">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2 · MAVEN -->
+    <article class="step" id="step-2" data-step="2" style="--step-accent:#ef4444;" hidden="">
+      <div class="marker"><span class="num">2</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false">
+          <span class="head-text">
+            <span class="head-title">Apache Maven 3.9.x <span class="tag core">Base</span></span>
+            <span class="head-sub">Gestión de dependencias y build</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>Descarga el <strong>Binary zip archive</strong> de <a href="https://maven.apache.org/download.cgi" target="_blank" rel="noopener">Maven 3.9.x</a>.</li>
+            <li>Extrae en <code>C:\Tools</code> → te quedará <code>C:\Tools\apache-maven-3.9.x</code>.</li>
+            <li>Abre <strong>Inicio → Editar las variables de entorno del sistema → Variables de entorno → Path → Editar → Nuevo</strong> y agrega la ruta de la carpeta <code>bin</code>. Conserva las demás entradas.</li>
+          </ul>
+          <div class="code">
+            <pre><code>C:\Tools\apache-maven-3.9.16\bin</code></pre>
+            <button class="copy" data-copy="C:\Tools\apache-maven-3.9.16\bin">Copiar</button>
+          </div>
+          <p class="expected"><strong>Importante:</strong> 3.9.16 es un ejemplo. Usa el nombre real de la carpeta que descargaste.</p>
+          <div class="code">
+            <pre><code>mvn -v</code></pre>
+            <button class="copy" data-copy="mvn -v">Copiar</button>
+          </div>
+          <p class="expected"><strong>Esperado:</strong> Maven <strong>3.9.x</strong> y <strong>Java version: 21</strong>.</p>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="2">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3 · GIT -->
+    <article class="step" id="step-3" data-step="3" style="--step-accent:#f59e0b;" hidden="">
+      <div class="marker"><span class="num">3</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false">
+          <span class="head-text">
+            <span class="head-title">Git + Git Bash <span class="tag core">Terminal</span></span>
+            <span class="head-sub">Control de versiones y shell de trabajo</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>Descarga <a href="https://git-scm.com/install/windows" target="_blank" rel="noopener">Git for Windows · x64 Setup</a>.</li>
+            <li>En la instalación elige <strong>Git from the command line and also from 3rd-party software</strong>.</li>
+            <li>Abre <strong>Git Bash</strong> desde Inicio y trabaja allí todo el taller.</li>
+          </ul>
+          <div class="code">
+            <pre><code>git --version</code></pre>
+            <button class="copy" data-copy="git --version">Copiar</button>
+          </div>
+          <p class="expected"><strong>Esperado:</strong> Git muestra su versión instalada.</p>
+
+          <h3>Configurar tu nombre y correo</h3>
+          <p style="color:var(--text-dim);font-size:.92rem">En Git Bash, ejecuta estos comandos reemplazando los ejemplos por tus datos. Esta configuración se aplica a todos tus repositorios de Git de este usuario de Windows.</p>
+          <div class="code">
+            <pre><code>git config --global user.name "Tu nombre"
+git config --global user.email "tu-correo@example.com"</code></pre>
+            <button class="copy" data-copy="git config --global user.name &quot;Tu nombre&quot;
+git config --global user.email &quot;tu-correo@example.com&quot;">Copiar</button>
+          </div>
+          <p style="color:var(--text-dim);font-size:.92rem">Comprueba los valores guardados:</p>
+          <div class="code">
+            <pre><code>git config --global user.name
+git config --global user.email</code></pre>
+            <button class="copy" data-copy="git config --global user.name
+git config --global user.email">Copiar</button>
+          </div>
+          <p class="expected"><strong>Esperado:</strong> aparecen tu nombre y tu correo.</p>
+          <div class="callout tip"><span class="ico">💡</span><div>Estos datos identifican tus commits; <strong>no inician sesión en GitHub</strong>.</div></div>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="3">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4 · INTELLIJ -->
+    <article class="step" id="step-4" data-step="4" style="--step-accent:#a855f7;" hidden="">
+      <div class="marker"><span class="num">4</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false">
+          <span class="head-text">
+            <span class="head-title">IntelliJ IDEA + Azure Toolkit <span class="tag">IDE</span></span>
+            <span class="head-sub">Editor y plugin oficial de Microsoft</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>Instala <a href="https://www.jetbrains.com/idea/download/?section=windows" target="_blank" rel="noopener">IntelliJ IDEA para Windows</a> con opciones predeterminadas. Las <strong>funciones gratuitas</strong> bastan para el taller.</li>
+            <li>En <strong>Settings → Plugins → Marketplace</strong> instala <strong>Azure Toolkit for IntelliJ</strong> (Microsoft).</li>
+            <li>Cuando abras el proyecto de prueba del paso 10, en <strong>File → Project Structure → Project SDK</strong> selecciona <strong>Temurin 21</strong>.</li>
+            <li>En <strong>Settings → Build, Execution, Deployment → Build Tools → Maven</strong> apunta <em>Maven home path</em> a tu carpeta (sin <code>bin</code>) y usa JDK 21 en <em>Importing</em> y <em>Runner</em>.</li>
+          </ul>
+          <div class="callout tip">
+            <span class="ico">💡</span>
+            <div>Las integraciones de Java, Maven y Git normalmente ya vienen incluidas: no necesitas instalar nada más aparte del plugin de Azure.</div>
+          </div>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="4">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5 · CORE TOOLS -->
+    <article class="step" id="step-5" data-step="5" style="--step-accent:#38bdf8;" hidden="">
+      <div class="marker"><span class="num">5</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false">
+          <span class="head-text">
+            <span class="head-title">Azure Functions Core Tools v4 <span class="tag core">Runtime</span></span>
+            <span class="head-sub">Ejecuta tus funciones en local</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>Descarga desde la <a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local#install-the-azure-functions-core-tools" target="_blank" rel="noopener">página oficial</a> el <strong>Windows installer (MSI) → 64-bit</strong> de <strong>Core Tools v4</strong>.</li>
+            <li>Ejecuta el MSI y completa los pasos.</li>
+            <li>Abre una nueva ventana de Git Bash.</li>
+          </ul>
+          <div class="code">
+            <pre><code>func --version</code></pre>
+            <button class="copy" data-copy="func --version">Copiar</button>
+          </div>
+          <p class="expected"><strong>Esperado:</strong> una versión que empieza por <strong>4.</strong></p>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="5">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6 · NODE -->
+    <article class="step" id="step-6" data-step="6" style="--step-accent:#22c55e;" hidden="">
+      <div class="marker"><span class="num">6</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false">
+          <span class="head-text">
+            <span class="head-title">Node.js 24 LTS <span class="tag core">Requisito</span></span>
+            <span class="head-sub">Necesario para instalar Azurite con npm</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>En <a href="https://nodejs.org/en/download/" target="_blank" rel="noopener">Node.js</a> elige <strong>24.x LTS · Windows · x64 · Windows Installer (.msi)</strong>.</li>
+            <li>Conserva las opciones de <strong>npm</strong> y <strong>Add to PATH</strong>.</li>
+          </ul>
+          <div class="code">
+            <pre><code>node --version
+npm --version</code></pre>
+            <button class="copy" data-copy="node --version
+npm --version">Copiar</button>
+          </div>
+          <p class="expected"><strong>Esperado:</strong> Node <strong>v24…</strong> y npm muestra un número de versión.</p>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="6">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+    <!-- 7 · AZURITE -->
+    <article class="step" id="step-7" data-step="7" style="--step-accent:#14b8a6;" hidden="">
+      <div class="marker"><span class="num">7</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false">
+          <span class="head-text">
+            <span class="head-title">Azurite 3.x <span class="tag core">Storage local</span></span>
+            <span class="head-sub">Emulador de Azure Storage en tu equipo</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>Instala Azurite globalmente con npm.</li>
+            <li>Inicia el emulador desde su carpeta de datos.</li>
+            <li>Deja esa ventana abierta mientras trabajas y usa otra Git Bash para los comandos del taller. Detén Azurite con <strong>Ctrl+C</strong>; para otra sesión repite el bloque de inicio.</li>
+          </ul>
+          <div class="code">
+            <pre><code>npm install -g azurite@3
+azurite --version</code></pre>
+            <button class="copy" data-copy="npm install -g azurite@3
+azurite --version">Copiar</button>
+          </div>
+          <div class="code">
+            <pre><code>mkdir -p "$HOME/azurite-data"
+cd "$HOME/azurite-data"
+azurite --location .</code></pre>
+            <button class="copy" data-copy="mkdir -p &quot;$HOME/azurite-data&quot;
+cd &quot;$HOME/azurite-data&quot;
+azurite --location .">Copiar</button>
+          </div>
+          <p class="expected"><strong>Esperado:</strong> los servicios <strong>Blob</strong>, <strong>Queue</strong> y <strong>Table</strong> escuchando en <strong>10000</strong>, <strong>10001</strong> y <strong>10002</strong>.</p>
+          <div class="callout tip">
+            <span class="ico">💡</span>
+            <div>
+              <strong>Configuración clave:</strong> para que el runtime local use Azurite, cuando exista el proyecto, agrega dentro de <code>Values</code> en <code>local.settings.json</code>
+              <code>"AzureWebJobsStorage": "UseDevelopmentStorage=true"</code> y <code>"FUNCTIONS_WORKER_RUNTIME": "java"</code>.
+            </div>
+          </div>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="7">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+    <!-- 8 · AZURE CLI -->
+    <article class="step" id="step-8" data-step="8" style="--step-accent:#06b6d4;" hidden="">
+      <div class="marker"><span class="num">8</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false">
+          <span class="head-text">
+            <span class="head-title">Azure CLI <span class="tag core">Requisito</span></span>
+            <span class="head-sub">Autenticación y despliegue a Azure</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>Instala Azure CLI para dejar preparado también el acceso y despliegue a Azure que se utilizará durante el taller.</li>
+            <li>Descarga el MSI desde <a href="https://aka.ms/installazurecliwindowsx64" target="_blank" rel="noopener">Azure CLI para Windows x64</a>.</li>
+            <li>Comprueba la instalación con <code>az --version</code>. Cuando el instructor indique iniciar sesión, usa <code>az login</code>; necesitarás una cuenta con acceso a la suscripción del taller.</li>
+          </ul>
+          <div class="code">
+            <pre><code>az --version</code></pre>
+            <button class="copy" data-copy="az --version">Copiar</button>
+          </div>
+          <p class="expected"><strong>Esperado:</strong> Azure CLI muestra su versión. Instala la <strong>versión estable actual</strong>.</p>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="8">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+    <!-- 9 · POSTMAN -->
+    <article class="step" id="step-9" data-step="9" hidden="">
+      <div class="marker"><span class="num">9</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false"><span class="head-text"><span class="head-title">Postman <span class="tag core">Cliente HTTP</span></span><span class="head-sub">Prueba tus funciones desde una interfaz visual</span></span></div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <ul class="checks">
+            <li>Abre la <a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">descarga oficial de Postman</a> y selecciona la <strong>aplicación de escritorio para Windows x64 / Intel 64-bit</strong>.</li>
+            <li>Ejecuta el archivo <strong>.exe</strong> y completa la instalación.</li>
+            <li>Abre Postman y completa el acceso o la configuración inicial que solicite la aplicación.</li>
+          </ul>
+          <p class="expected"><strong>Esperado:</strong> Postman abre y permite crear una solicitud HTTP. La prueba contra la función local se realiza en el paso 10.</p>
+          <div class="callout tip"><span class="ico">💡</span><div>Instala la <strong>aplicación de escritorio</strong>, no únicamente el Desktop Agent. Usaremos Postman para enviar solicitudes a la función del taller.</div></div>
+        </div></div></div>
+        <div class="card-foot"><label class="check"><input type="checkbox" data-complete="9"><span class="box">✓</span><span class="txt">Marcar como completado</span></label></div>
+      </div>
+    </article>
+
+    <!-- 10 · VERIFICACIÓN -->
+    <article class="step" id="step-10" data-step="10" style="--step-accent:#22c55e;" hidden="">
+      <div class="marker"><span class="num">10</span><span class="tick">✓</span></div>
+      <div class="card">
+        <div class="card-head" aria-expanded="false">
+          <span class="head-text">
+            <span class="head-title">Verificación final <span class="tag ok">Todo listo</span></span>
+            <span class="head-sub">Comprueba que todo responde como se espera</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="card-body"><div class="body-inner"><div class="body-pad">
+          <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:8px;">
+            En otra ventana de Git Bash (con Azurite en ejecución) ejecuta este bloque:
+          </p>
+          <div class="code">
+            <pre><code>java -version
+javac -version
+mvn -v
+git --version
+func --version
+node --version
+npm --version
+azurite --version
+az --version</code></pre>
+            <button class="copy" data-copy="java -version
+javac -version
+mvn -v
+git --version
+func --version
+node --version
+npm --version
+azurite --version
+az --version">Copiar</button>
+          </div>
+          <div class="callout good">
+            <span class="ico">✅</span>
+            <div>
+              Estas comprobaciones confirman las instalaciones. Completa también la <strong>prueba de funcionamiento</strong> que aparece debajo antes de marcar este paso.
+            </div>
+          </div>
+          <div class="callout warn">
+            <span class="ico">📌</span>
+            <div>
+              Azure Functions <strong>v4 admite Java 21 en Windows y Linux</strong>.
+              Configura también el proyecto del taller para Java 21.
+            </div>
+          </div>
+<h3>Prueba de funcionamiento</h3>
+<p style="color:var(--text-dim);font-size:.92rem">Validaremos Java 21, Maven, Core Tools y una escritura real en Azurite. No se crean recursos ni se despliega nada en Azure.</p>
+<h4>1. Crear el proyecto</h4><p style="color:var(--text-dim);font-size:.9rem">Mantén Azurite abierto. En otra Git Bash, copia este bloque completo. La primera descarga puede tardar unos minutos. Si ya existe <code>fase0-prueba</code>, reutilízalo y pasa al punto 2.</p><div class="code"><pre><code>mkdir -p "$HOME/azure-taller"
+cd "$HOME/azure-taller"
+mvn archetype:generate \
+  -DarchetypeGroupId=com.microsoft.azure \
+  -DarchetypeArtifactId=azure-functions-archetype \
+  -DarchetypeVersion=1.66 \
+  -DgroupId=com.taller \
+  -DartifactId=fase0-prueba \
+  -Dversion=1.0-SNAPSHOT \
+  -Dpackage=com.taller \
+  -DappName=fase0-prueba \
+  -DappRegion=westus \
+  -DjavaVersion=21 \
+  -DinteractiveMode=false
+</code></pre><button class="copy" data-copy="mkdir -p &quot;$HOME/azure-taller&quot;
+cd &quot;$HOME/azure-taller&quot;
+mvn archetype:generate \
+  -DarchetypeGroupId=com.microsoft.azure \
+  -DarchetypeArtifactId=azure-functions-archetype \
+  -DarchetypeVersion=1.66 \
+  -DgroupId=com.taller \
+  -DartifactId=fase0-prueba \
+  -Dversion=1.0-SNAPSHOT \
+  -Dpackage=com.taller \
+  -DappName=fase0-prueba \
+  -DappRegion=westus \
+  -DjavaVersion=21 \
+  -DinteractiveMode=false
+">Copiar</button></div>
+<p class="expected"><strong>Esperado:</strong> BUILD SUCCESS y una carpeta llamada fase0-prueba. Abre esa carpeta desde <strong>File → Open</strong> en IntelliJ y confirma el SDK y Maven del paso 4.</p>
+<h4>2. Configurar y compilar</h4><p style="color:var(--text-dim);font-size:.9rem">Este bloque crea la configuración local y una función HTTP que escribe un mensaje en la cola <code>fase0-prueba</code>. Úsalo únicamente en el proyecto de prueba: reemplaza su local.settings.json y SmokeProbe.java.</p><div class="code"><pre><code>cd "$HOME/azure-taller/fase0-prueba"
+cat &gt; local.settings.json &lt;&lt;'JSON'
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true"
+  }
+}
+JSON
+cat &gt; src/main/java/com/taller/SmokeProbe.java &lt;&lt;'JAVA'
+package com.taller;
+
+import com.microsoft.azure.functions.*;
+import com.microsoft.azure.functions.annotation.*;
+import java.util.Optional;
+
+public class SmokeProbe {
+    @FunctionName("SmokeProbe")
+    public HttpResponseMessage run(
+        @HttpTrigger(name = "req", methods = {HttpMethod.GET},
+            authLevel = AuthorizationLevel.ANONYMOUS)
+        HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+        @QueueOutput(name = "message", queueName = "fase0-prueba",
+            connection = "AzureWebJobsStorage") OutputBinding&lt;String&gt; message,
+        final ExecutionContext context) {
+        String result = "Ambiente OK - Java " + System.getProperty("java.version");
+        message.setValue(result);
+        return request.createResponseBuilder(HttpStatus.OK).body(result).build();
+    }
+}
+JAVA
+mvn clean package
+</code></pre><button class="copy" data-copy="cd &quot;$HOME/azure-taller/fase0-prueba&quot;
+cat &gt; local.settings.json &lt;&lt;'JSON'
+{
+  &quot;IsEncrypted&quot;: false,
+  &quot;Values&quot;: {
+    &quot;FUNCTIONS_WORKER_RUNTIME&quot;: &quot;java&quot;,
+    &quot;AzureWebJobsStorage&quot;: &quot;UseDevelopmentStorage=true&quot;
+  }
+}
+JSON
+cat &gt; src/main/java/com/taller/SmokeProbe.java &lt;&lt;'JAVA'
+package com.taller;
+
+import com.microsoft.azure.functions.*;
+import com.microsoft.azure.functions.annotation.*;
+import java.util.Optional;
+
+public class SmokeProbe {
+    @FunctionName(&quot;SmokeProbe&quot;)
+    public HttpResponseMessage run(
+        @HttpTrigger(name = &quot;req&quot;, methods = {HttpMethod.GET},
+            authLevel = AuthorizationLevel.ANONYMOUS)
+        HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+        @QueueOutput(name = &quot;message&quot;, queueName = &quot;fase0-prueba&quot;,
+            connection = &quot;AzureWebJobsStorage&quot;) OutputBinding&lt;String&gt; message,
+        final ExecutionContext context) {
+        String result = &quot;Ambiente OK - Java &quot; + System.getProperty(&quot;java.version&quot;);
+        message.setValue(result);
+        return request.createResponseBuilder(HttpStatus.OK).body(result).build();
+    }
+}
+JAVA
+mvn clean package
+">Copiar</button></div>
+<p class="expected"><strong>Esperado:</strong> BUILD SUCCESS. No subas local.settings.json con secretos al repositorio; conserva su exclusión en .gitignore.</p>
+<h4>3. Ejecutar la función</h4><div class="code"><pre><code>cd "$HOME/azure-taller/fase0-prueba"
+mvn azure-functions:run</code></pre><button class="copy" data-copy="cd &quot;$HOME/azure-taller/fase0-prueba&quot;
+mvn azure-functions:run">Copiar</button></div>
+<p class="expected"><strong>Esperado:</strong> aparece la función SmokeProbe en <code>http://localhost:7071/api/SmokeProbe</code>. Deja esta ventana abierta, además de la ventana de Azurite.</p>
+<h4>4. Probar con Postman</h4>
+<ul class="checks">
+  <li>Con Functions y Azurite activos, abre Postman y crea una solicitud <strong>HTTP</strong> nueva mediante <strong>New → HTTP</strong> o una pestaña nueva de solicitud.</li>
+  <li>Selecciona el método <strong>GET</strong> y pega <code>http://localhost:7071/api/SmokeProbe</code>.</li>
+  <li>En <strong>Authorization</strong>, selecciona <strong>No Auth</strong>. No necesitas body para esta solicitud.</li>
+  <li>Pulsa <strong>Send</strong>.</li>
+</ul>
+<p class="expected"><strong>Esperado:</strong> estado <strong>200 OK</strong> y cuerpo <code>Ambiente OK - Java 21...</code>. En Azurite debe aparecer una operación POST a <code>fase0-prueba/messages</code> con estado 201.</p>
+<h4>Alternativa: verificar desde Git Bash</h4><p style="color:var(--text-dim);font-size:.9rem">Abre una tercera ventana de Git Bash y ejecuta:</p><div class="code"><pre><code>curl -i http://localhost:7071/api/SmokeProbe</code></pre><button class="copy" data-copy="curl -i http://localhost:7071/api/SmokeProbe">Copiar</button></div>
+<p class="expected"><strong>Esperado:</strong> HTTP 200 y <code>Ambiente OK - Java 21...</code>. En la ventana de Azurite debe aparecer una operación <code>POST</code> a la cola <code>fase0-prueba/messages</code> con estado <strong>201</strong>: confirma que el mensaje se guardó.</p>
+<div class="callout good"><span class="ico">✓</span><div><strong>Ambiente habilitado:</strong> compilación correcta, respuesta en Postman con Java 21 y mensaje escrito en Azurite. Ahora sí marca la verificación final como completada. Al terminar, detén Functions y Azurite con Ctrl+C en sus respectivas ventanas.</div></div>
+<p style="color:var(--text-dim);font-size:.85rem">Proyecto basado en el <a href="https://github.com/microsoft/azure-maven-archetypes">arquetipo oficial</a>, versión <a href="https://azure.github.io/azure-sdk/releases/latest/all/java.html">1.66</a>. No necesitas iniciar sesión en Azure para esta prueba local.</p>
+        </div></div></div>
+        <div class="card-foot">
+          <label class="check">
+            <input type="checkbox" data-complete="10">
+            <span class="box">✓</span>
+            <span class="txt">Marcar como completado</span>
+          </label>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <div class="alt-actions"><button id="previousStep" disabled="">← Anterior</button><span id="currentStage" aria-live="polite">ETAPA 1 DE 10</span><button id="nextStep">Siguiente →</button></div>
+
+  </div></div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "af-java21-progress-v2-postman";
+  var steps = Array.prototype.slice.call(document.querySelectorAll(".step"));
+  var checkboxes = Array.prototype.slice.call(document.querySelectorAll("[data-complete]"));
+  var barFill = document.getElementById("barFill");
+  var countEl = document.getElementById("count");
+  var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+  var total = checkboxes.filter(function (c) { return !c.hasAttribute("data-optional"); }).length;
+
+  /* ---------- Persistencia ---------- */
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+      var old = JSON.parse(localStorage.getItem("af-java21-progress-v1") || "{}");
+      if (old && typeof old === "object" && !Array.isArray(old)) {
+        old["10"] = false; old["9"] = false;
+        return old;
+      }
+      return {};
+    } catch (e) { return {}; }
+  }
+  function saveState(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function currentState() {
+    var s = {};
+    checkboxes.forEach(function (c) { s[c.dataset.complete] = c.checked; });
+    return s;
+  }
+
+  /* ---------- Pintar UI ---------- */
+  function updateUI() {
+    var done = 0;
+    checkboxes.forEach(function (c) {
+      if (c.checked && !c.hasAttribute("data-optional")) done++;
+      var step = c.closest(".step");
+      if (step) step.classList.toggle("done", c.checked);
+      var txt = c.parentElement.querySelector(".txt");
+      if (txt) txt.textContent = c.checked ? "Completado" : "Marcar como completado";
+    });
+
+    var pct = total ? (done / total) * 100 : 0;
+    barFill.style.width = pct + "%";
+    barFill.parentElement.setAttribute("aria-valuenow", done);
+    countEl.innerHTML = done + " <small>/ " + total + "</small>";
+
+    chips.forEach(function (chip) {
+      var n = chip.dataset.chip;
+      var cb = checkboxes.find(function (c) { return c.dataset.complete === n; });
+      chip.classList.toggle("done", !!(cb && cb.checked));
+    });
+
+    saveState(currentState());
+  }
+
+  /* ---------- Inicializar desde storage ---------- */
+  var saved = loadState();
+  if (!saved || typeof saved !== "object" || Array.isArray(saved)) saved = {};
+  checkboxes.forEach(function (c) {
+    if (saved[c.dataset.complete]) c.checked = true;
+  });
+
+  /* ---------- Eventos de check ---------- */
+  checkboxes.forEach(function (c) {
+    c.addEventListener("change", updateUI);
+  });
+
+  /* ---------- Expandir / contraer tarjetas ---------- */
+  function setOpen(step, open) {
+    step.classList.toggle("open", open);
+    var head = step.querySelector(".card-head");
+    if (head) head.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  steps.forEach(function (step) {
+    var head = step.querySelector(".card-head");
+    if (!head) return;
+    head.addEventListener("click", function () {
+      setOpen(step, true);
+    });
+  });
+
+  document.getElementById("expandAll")?.addEventListener("click", function () {
+    steps.forEach(function (s) { setOpen(s, true); });
+  });
+  document.getElementById("collapseAll")?.addEventListener("click", function () {
+    steps.forEach(function (s) { setOpen(s, false); });
+  });
+  document.getElementById("reset").addEventListener("click", function () {
+    if (!confirm("¿Reiniciar el progreso de todos los pasos?")) return;
+    checkboxes.forEach(function (c) { c.checked = false; });
+    updateUI();
+  });
+
+  /* ---------- Copiar al portapapeles ---------- */
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var text = btn.dataset.copy || "";
+      var done = function () {
+        var original = "Copiar";
+        btn.textContent = "¡Copiado!";
+        btn.classList.add("copied");
+        setTimeout(function () {
+          btn.textContent = original;
+          btn.classList.remove("copied");
+        }, 1500);
+      };
+      var copyFailed = function () {
+        btn.textContent = "Usa Ctrl+C";
+        var range = document.createRange();
+        range.selectNodeContents(btn.parentElement.querySelector("code"));
+        var selection = window.getSelection();
+        selection.removeAllRanges(); selection.addRange(range);
+        setTimeout(function () { btn.textContent = "Copiar"; }, 2500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          if (fallbackCopy(text)) done(); else copyFailed();
+        });
+      } else {
+        if (fallbackCopy(text)) done(); else copyFailed();
+      }
+    });
+  });
+
+  var activeStage = 0;
+  function showStage(index, scroll) {
+    activeStage = index;
+    steps.forEach(function (step, i) {
+      step.hidden = i !== index;
+      setOpen(step, i === index);
+      step.querySelectorAll("button, a, input").forEach(function (el) { el.disabled = false; });
+    });
+    chips.forEach(function (chip, i) {
+      if (i === index) chip.setAttribute("aria-current", "step");
+      else chip.removeAttribute("aria-current");
+    });
+    document.getElementById("previousStep").disabled = index === 0;
+    document.getElementById("nextStep").disabled = index === steps.length - 1;
+    document.getElementById("currentStage").textContent = "ETAPA " + (index + 1) + " DE " + steps.length;
+    if (scroll) document.querySelector(".alt-content").scrollIntoView({behavior:"smooth", block:"start"});
+  }
+  chips.forEach(function (chip, index) {
+    chip.addEventListener("click", function (event) { event.preventDefault(); showStage(index, true); });
+  });
+  document.getElementById("previousStep").onclick = function () { showStage(Math.max(0,activeStage-1), true); };
+  document.getElementById("nextStep").onclick = function () { showStage(Math.min(steps.length-1,activeStage+1), true); };
+  showStage(0, false);
+  /* ---------- Arrancar ---------- */
+  setOpen(steps[0], true);
+  updateUI();
+})();
+</script>
+
+
+</div></body></html>
