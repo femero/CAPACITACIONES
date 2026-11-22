@@ -137,12 +137,11 @@
       }
       const r = await res.json();
       const aprobado = r.resultado === "Aprobado";
-      mostrarResultado(datos.nombre_cuestionario, [
-        "Candidato: " + datos.nombre,
-        "Puntaje: " + r.puntaje + " de 5",
-        "Resultado: " + r.resultado
-      ], aprobado ? "aprobado" : "no-aprobado");
-      form.reset();
+		mostrarResultado(datos.nombre_cuestionario, [
+		  "Candidato: " + datos.nombre,
+		  "Puntaje: " + r.puntaje + " de " + r.total + " (" + r.porcentaje + " %)",
+		  "Resultado: " + r.resultado
+		], aprobado ? "aprobado" : "no-aprobado");      form.reset();
     } catch (err) {
       mostrarResultado("No se pudo conectar", [err.message]);
     }
