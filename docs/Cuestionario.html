@@ -17,6 +17,8 @@
   <h1>Cuestionario de Java y Spring</h1>
 
   <form id="cuestionario">
+    <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
+
     <label>
       Nombre del candidato
       <input name="nombre" required>
@@ -63,50 +65,24 @@
   <script>
     const URL_FLUJO = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/956767c067a84d48b001999c783a5183/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2WsyKRgrQkEE5VBiQA3dRe7DJ1V3XnD6Cy0jH1sIlbc";
 
-    const respuestas = { q1: "a", q2: "c", q3: "b", q4: "b", q5: "b" };
-    const temas = {
-      q1: "anotaciones de Spring",
-      q2: "métodos HTTP",
-      q3: "palabras clave de Java",
-      q4: "códigos HTTP",
-      q5: "anotaciones de JPA"
-    };
-
     document.getElementById("cuestionario").addEventListener("submit", async (e) => {
       e.preventDefault();
       const form = e.target;
 
-      for (const q in respuestas) {
-        if (!form.querySelector(`input[name="${q}"]:checked`)) {
+      const respuestas = {};
+      for (let i = 1; i <= 5; i++) {
+        const sel = form.querySelector(`input[name="q${i}"]:checked`);
+        if (!sel) {
           alert("Responde todas las preguntas antes de enviar.");
           return;
         }
-      }
-
-      let puntaje = 0;
-      const fallos = [];
-      for (const q in respuestas) {
-        const sel = form.querySelector(`input[name="${q}"]:checked`);
-        if (sel.value === respuestas[q]) {
-          puntaje++;
-        } else {
-          fallos.push(temas[q]);
-        }
-      }
-
-      let feedback;
-      if (puntaje === 5) {
-        feedback = "Excelente dominio de los temas evaluados.";
-      } else if (puntaje >= 3) {
-        feedback = "Buen desempeño. Repasar: " + fallos.join(", ") + ".";
-      } else {
-        feedback = "Necesita reforzar los conceptos básicos. Repasar: " + fallos.join(", ") + ".";
+        respuestas[`q${i}`] = sel.value.toUpperCase();
       }
 
       const datos = {
         nombre: form.nombre.value,
-        puntaje: puntaje,
-        comentario: feedback
+        nombre_cuestionario: form.cuestionario.value,
+        respuestas: JSON.stringify(respuestas)
       };
 
       try {
@@ -120,7 +96,11 @@
           return;
         }
         const r = await res.json();
-        alert("Puntaje: " + puntaje + " de 5\nResultado: " + r.resultado);
+        alert(
+          "Candidato: " + datos.nombre + "\n" +
+          "Puntaje: " + r.puntaje + " de 5\n" +
+          "Resultado: " + r.resultado
+        );
         form.reset();
       } catch (err) {
         alert("No se pudo conectar: " + err.message);
