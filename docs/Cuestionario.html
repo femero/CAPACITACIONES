@@ -1,32 +1,131 @@
-<form id="encuesta">
-  <input name="nombre" required>
-  <input name="puntaje" type="number" min="1" max="5" required>
-  <textarea name="comentario"></textarea>
-  <button type="submit">Enviar</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cuestionario</title>
+  <style>
+    body { font-family: sans-serif; max-width: 640px; margin: 24px auto; padding: 0 16px; }
+    fieldset { margin: 16px 0; border: 1px solid #ccc; border-radius: 8px; padding: 12px 16px; }
+    legend { font-weight: bold; padding: 0 6px; }
+    label.opcion { display: block; margin: 6px 0; cursor: pointer; }
+    input[name="nombre"] { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+    button { padding: 10px 24px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Cuestionario de Java y Spring</h1>
 
-<script>
-const URL_FLUJO = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/956767c067a84d48b001999c783a5183/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2WsyKRgrQkEE5VBiQA3dRe7DJ1V3XnD6Cy0jH1sIlbc";
+  <form id="cuestionario">
+    <label>
+      Nombre del candidato
+      <input name="nombre" required>
+    </label>
 
-document.getElementById("encuesta").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const datos = Object.fromEntries(new FormData(e.target));
-  datos.puntaje = Number(datos.puntaje);
+    <fieldset>
+      <legend>1. ¿Qué anotación marca una clase como servicio en Spring?</legend>
+      <label class="opcion"><input type="radio" name="q1" value="a"> @Service</label>
+      <label class="opcion"><input type="radio" name="q1" value="b"> @Entity</label>
+      <label class="opcion"><input type="radio" name="q1" value="c"> @Table</label>
+    </fieldset>
 
-  try {
-    const res = await fetch(URL_FLUJO, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos)
+    <fieldset>
+      <legend>2. ¿Qué método HTTP se usa normalmente para crear un recurso?</legend>
+      <label class="opcion"><input type="radio" name="q2" value="a"> GET</label>
+      <label class="opcion"><input type="radio" name="q2" value="b"> DELETE</label>
+      <label class="opcion"><input type="radio" name="q2" value="c"> POST</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>3. ¿Qué palabra clave impide que una variable cambie su valor en Java?</legend>
+      <label class="opcion"><input type="radio" name="q3" value="a"> static</label>
+      <label class="opcion"><input type="radio" name="q3" value="b"> final</label>
+      <label class="opcion"><input type="radio" name="q3" value="c"> void</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>4. ¿Qué código de estado HTTP indica que un recurso fue creado?</legend>
+      <label class="opcion"><input type="radio" name="q4" value="a"> 200</label>
+      <label class="opcion"><input type="radio" name="q4" value="b"> 201</label>
+      <label class="opcion"><input type="radio" name="q4" value="c"> 404</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>5. ¿Qué anotación de JPA define la clave primaria?</legend>
+      <label class="opcion"><input type="radio" name="q5" value="a"> @Column</label>
+      <label class="opcion"><input type="radio" name="q5" value="b"> @Id</label>
+      <label class="opcion"><input type="radio" name="q5" value="c"> @Transient</label>
+    </fieldset>
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    const URL_FLUJO = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/956767c067a84d48b001999c783a5183/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2WsyKRgrQkEE5VBiQA3dRe7DJ1V3XnD6Cy0jH1sIlbc";
+
+    const respuestas = { q1: "a", q2: "c", q3: "b", q4: "b", q5: "b" };
+    const temas = {
+      q1: "anotaciones de Spring",
+      q2: "métodos HTTP",
+      q3: "palabras clave de Java",
+      q4: "códigos HTTP",
+      q5: "anotaciones de JPA"
+    };
+
+    document.getElementById("cuestionario").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+
+      for (const q in respuestas) {
+        if (!form.querySelector(`input[name="${q}"]:checked`)) {
+          alert("Responde todas las preguntas antes de enviar.");
+          return;
+        }
+      }
+
+      let puntaje = 0;
+      const fallos = [];
+      for (const q in respuestas) {
+        const sel = form.querySelector(`input[name="${q}"]:checked`);
+        if (sel.value === respuestas[q]) {
+          puntaje++;
+        } else {
+          fallos.push(temas[q]);
+        }
+      }
+
+      let feedback;
+      if (puntaje === 5) {
+        feedback = "Excelente dominio de los temas evaluados.";
+      } else if (puntaje >= 3) {
+        feedback = "Buen desempeño. Repasar: " + fallos.join(", ") + ".";
+      } else {
+        feedback = "Necesita reforzar los conceptos básicos. Repasar: " + fallos.join(", ") + ".";
+      }
+
+      const datos = {
+        nombre: form.nombre.value,
+        puntaje: puntaje,
+        comentario: feedback
+      };
+
+      try {
+        const res = await fetch(URL_FLUJO, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos)
+        });
+        if (!res.ok) {
+          alert("Error " + res.status);
+          return;
+        }
+        const r = await res.json();
+        alert("Puntaje: " + puntaje + " de 5\nResultado: " + r.resultado);
+        form.reset();
+      } catch (err) {
+        alert("No se pudo conectar: " + err.message);
+      }
     });
-    if (!res.ok) {
-      alert("Error " + res.status);
-      return;
-    }
-    const r = await res.json();
-    alert("Resultado: " + r.resultado);
-  } catch (err) {
-    alert("No se pudo conectar: " + err.message);
-  }
-});
-</script>
+  </script>
+</body>
+</html>
