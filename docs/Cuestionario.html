@@ -8,19 +8,17 @@
     body { font-family: sans-serif; max-width: 960px; margin: 24px auto; padding: 0 16px; }
     h1 { margin-bottom: 16px; }
     .contenedor { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+    .campo { display: block; margin-top: 12px; }
+    .campo input { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+    .campo input[readonly] { background: #f0f0f0; }
     fieldset { margin: 16px 0; border: 1px solid #ccc; border-radius: 8px; padding: 12px 16px; }
     legend { font-weight: bold; padding: 0 6px; }
     label.opcion { display: block; margin: 6px 0; cursor: pointer; }
-    input[name="nombre"] { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
     button { padding: 10px 24px; font-size: 16px; cursor: pointer; }
     .panel-resultado {
-      position: sticky;
-      top: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 16px;
-      background: #fafafa;
-      min-height: 120px;
+      position: sticky; top: 16px;
+      border: 1px solid #ccc; border-radius: 8px;
+      padding: 16px; background: #fafafa; min-height: 120px;
     }
     .panel-resultado h2 { font-size: 18px; margin: 0 0 12px; }
     .panel-resultado p { margin: 6px 0; }
@@ -39,13 +37,14 @@
     <form id="cuestionario">
       <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
 
-		<label style="display:block; margin-top:12px;">
-		  Código de empleado
-		  <input name="codigo_empleado" required maxlength="20" style="width:100%; padding:8px; margin-top:4px; box-sizing:border-box;">
-		</label>
-      <label>
+      <label class="campo">
+        Código de empleado
+        <input name="codigo_empleado" required inputmode="numeric" pattern="[0-9]+" maxlength="10">
+      </label>
+
+      <label class="campo">
         Nombre del candidato
-        <input name="nombre" required>
+        <input name="nombre" readonly placeholder="Se completa al ingresar el código">
       </label>
 
       <fieldset>
@@ -94,6 +93,11 @@
 
   <script>
   const URL_FLUJO = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/956767c067a84d48b001999c783a5183/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2WsyKRgrQkEE5VBiQA3dRe7DJ1V3XnD6Cy0jH1sIlbc";
+  const URL_CONSULTA = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/98ca81215df64be2ac51dd07ed6ec2e6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=hsg5FsqTQmfkXOTDU1MtZ6T7BO2QIiY5ktCr7oRAfHw";
+
+  const form = document.getElementById("cuestionario");
+  const campoCodigo = form.codigo_empleado;
+  const campoNombre = form.nombre;
 
   function mostrarResultado(titulo, lineas, clase) {
     const cont = document.getElementById("resultado");
@@ -109,26 +113,55 @@
     });
   }
 
-  document.getElementById("cuestionario").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const form = e.target;
+  campoCodigo.addEventListener("change", async () => {
+    campoNombre.value = "";
+    const codigo = campoCodigo.value.trim();
+    if (!/^[0-9]+$/.test(codigo)) {
+      campoNombre.placeholder = "Ingresa solo números";
+      return;
+    }
+    campoNombre.placeholder = "Buscando...";
+    try {
+      const res = await fetch(URL_CONSULTA, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ codigo_empleado: codigo })
+      });
+      if (res.ok) {
+        const r = await res.json();
+        campoNombre.value = r.nombre;
+      } else {
+        campoNombre.placeholder = "Código no encontrado o inactivo";
+      }
+    } catch (err) {
+      campoNombre.placeholder = "No se pudo consultar";
+    }
+  });
 
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!campoNombre.value) {
+      mostrarResultado("Código no válido", ["Ingresa un código de empleado activo."]);
+      return;
+    }
+
+    const nombres = [...new Set([...form.querySelectorAll('input[type="radio"]')].map(r => r.name))];
     const respuestas = {};
-    for (let i = 1; i <= 5; i++) {
-      const sel = form.querySelector(`input[name="q${i}"]:checked`);
+    for (const n of nombres) {
+      const sel = form.querySelector(`input[name="${n}"]:checked`);
       if (!sel) {
         mostrarResultado("Faltan respuestas", ["Responde todas las preguntas antes de enviar."]);
         return;
       }
-      respuestas[`q${i}`] = sel.value.toUpperCase();
+      respuestas[n] = sel.value.toUpperCase();
     }
 
-	const datos = {
-	  codigo_empleado: form.codigo_empleado.value.trim(),
-	  nombre: form.nombre.value,
-	  nombre_cuestionario: form.cuestionario.value,
-	  respuestas: JSON.stringify(respuestas)
-	};
+    const datos = {
+      codigo_empleado: campoCodigo.value.trim(),
+      nombre_cuestionario: form.cuestionario.value,
+      respuestas: JSON.stringify(respuestas)
+    };
 
     try {
       const res = await fetch(URL_FLUJO, {
@@ -136,18 +169,24 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos)
       });
+      if (res.status === 400) {
+        mostrarResultado("Código no válido", ["El código no existe o el empleado no está activo."]);
+        return;
+      }
       if (!res.ok) {
         mostrarResultado("Error al enviar", ["Código de error: " + res.status]);
         return;
       }
       const r = await res.json();
       const aprobado = r.resultado === "Aprobado";
-		mostrarResultado(datos.nombre_cuestionario, [
-		  "Candidato: " + datos.nombre,
-		  "Código de empleado: " + datos.codigo_empleado,
-		  "Puntaje: " + r.puntaje + " de " + r.total + " (" + r.porcentaje + " %)",
-		  "Resultado: " + r.resultado
-		], aprobado ? "aprobado" : "no-aprobado");		form.reset();
+      mostrarResultado(datos.nombre_cuestionario, [
+        "Candidato: " + (r.nombre || campoNombre.value),
+        "Código de empleado: " + datos.codigo_empleado,
+        "Puntaje: " + r.puntaje + " de " + r.total + " (" + r.porcentaje + " %)",
+        "Resultado: " + r.resultado
+      ], aprobado ? "aprobado" : "no-aprobado");
+      form.reset();
+      campoNombre.placeholder = "Se completa al ingresar el código";
     } catch (err) {
       mostrarResultado("No se pudo conectar", [err.message]);
     }
