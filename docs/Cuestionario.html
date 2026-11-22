@@ -39,6 +39,10 @@
     <form id="cuestionario">
       <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
 
+		<label style="display:block; margin-top:12px;">
+		  Código de empleado
+		  <input name="codigo_empleado" required maxlength="20" style="width:100%; padding:8px; margin-top:4px; box-sizing:border-box;">
+		</label>
       <label>
         Nombre del candidato
         <input name="nombre" required>
@@ -119,11 +123,12 @@
       respuestas[`q${i}`] = sel.value.toUpperCase();
     }
 
-    const datos = {
-      nombre: form.nombre.value,
-      nombre_cuestionario: form.cuestionario.value,
-      respuestas: JSON.stringify(respuestas)
-    };
+	const datos = {
+	  codigo_empleado: form.codigo_empleado.value.trim(),
+	  nombre: form.nombre.value,
+	  nombre_cuestionario: form.cuestionario.value,
+	  respuestas: JSON.stringify(respuestas)
+	};
 
     try {
       const res = await fetch(URL_FLUJO, {
@@ -139,9 +144,10 @@
       const aprobado = r.resultado === "Aprobado";
 		mostrarResultado(datos.nombre_cuestionario, [
 		  "Candidato: " + datos.nombre,
+		  "Código de empleado: " + datos.codigo_empleado,
 		  "Puntaje: " + r.puntaje + " de " + r.total + " (" + r.porcentaje + " %)",
 		  "Resultado: " + r.resultado
-		], aprobado ? "aprobado" : "no-aprobado");      form.reset();
+		], aprobado ? "aprobado" : "no-aprobado");		form.reset();
     } catch (err) {
       mostrarResultado("No se pudo conectar", [err.message]);
     }
