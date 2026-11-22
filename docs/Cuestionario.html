@@ -13,11 +13,22 @@ document.getElementById("encuesta").addEventListener("submit", async (e) => {
   const datos = Object.fromEntries(new FormData(e.target));
   datos.puntaje = Number(datos.puntaje);
 
-  const res = await fetch(URL_FLUJO, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datos)
-  });
-  alert(res.ok ? "¡Gracias por responder!" : "Error al enviar");
+  try {
+    const res = await fetch(URL_FLUJO, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos)
+    });
+    const texto = await res.text();
+    console.log("Estado:", res.status, texto);
+    if (res.ok) {
+      alert("¡Gracias por responder!");
+    } else {
+      alert("Error " + res.status + ": " + texto);
+    }
+  } catch (err) {
+    console.error("Fallo de red o CORS:", err);
+    alert("No se pudo conectar: " + err.message);
+  }
 });
 </script>
