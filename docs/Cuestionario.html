@@ -275,6 +275,11 @@ async function buscarEmpleado() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ codigo_empleado: codigo, nombre_cuestionario: form.cuestionario.value })
     });
+    if (res.status === 409) {
+      campoNombre.placeholder = "Intento ya utilizado";
+      mostrarResultado("Intento ya utilizado", ["Este código ya completó el cuestionario. Solo se permite un intento."], "no-aprobado");
+      return;
+    }
     if (!res.ok) { campoNombre.placeholder = "Código no encontrado o inactivo"; return; }
     const r = await res.json();
     campoNombre.value = r.nombre;
