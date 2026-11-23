@@ -59,7 +59,7 @@
         Intento
         <input name="intento" readonly placeholder="Se calcula al buscar">
       </label>
-	  
+
       <fieldset>
         <legend>1. ¿Qué anotación marca una clase como servicio en Spring?</legend>
         <label class="opcion"><input type="radio" name="q1" value="a"> @Service</label>
@@ -114,12 +114,13 @@
   const form = document.getElementById("cuestionario");
   const campoCodigo = form.codigo_empleado;
   const campoNombre = form.nombre;
+  const campoIntento = form.intento;
   const btnEnviar = document.getElementById("btnEnviar");
   const btnBuscar = document.getElementById("btnBuscar");
   const btnLimpiar = document.getElementById("btnLimpiar");
   const panel = document.getElementById("resultado");
-  const cacheNombres = {};
-  const PLACEHOLDER_NOMBRE = "Ingresa el código y presiona Buscar";
+  const PH_NOMBRE = "Ingresa el código y presiona Buscar";
+  const PH_INTENTO = "Se calcula al buscar";
 
   function mostrarResultado(titulo, lineas, clase) {
     panel.textContent = "";
@@ -138,19 +139,22 @@
     mostrarResultado("Resultado", ["Aquí aparecerá el resultado al enviar el cuestionario."]);
   }
 
+  function borrarBusqueda() {
+    campoNombre.value = "";
+    campoNombre.placeholder = PH_NOMBRE;
+    campoIntento.value = "";
+    campoIntento.placeholder = PH_INTENTO;
+    btnEnviar.disabled = true;
+  }
+
   async function buscarEmpleado() {
     campoNombre.value = "";
+    campoIntento.value = "";
     btnEnviar.disabled = true;
     const codigo = campoCodigo.value.trim();
 
     if (!/^[0-9]+$/.test(codigo)) {
       campoNombre.placeholder = "Ingresa solo números";
-      return;
-    }
-
-    if (cacheNombres[codigo]) {
-      campoNombre.value = cacheNombres[codigo];
-      btnEnviar.disabled = false;
       return;
     }
 
@@ -160,13 +164,16 @@
       const res = await fetch(URL_CONSULTA, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ codigo_empleado: codigo })
+        body: JSON.stringify({
+          codigo_empleado: codigo,
+          nombre_cuestionario: form.cuestionario.value
+        })
       });
       if (codigo !== campoCodigo.value.trim()) return;
       if (res.ok) {
         const r = await res.json();
-        cacheNombres[codigo] = r.nombre;
         campoNombre.value = r.nombre;
+        campoIntento.value = r.intento;
         btnEnviar.disabled = false;
       } else {
         campoNombre.placeholder = "Código no encontrado o inactivo";
@@ -180,27 +187,20 @@
 
   function limpiarFormulario() {
     form.reset();
-    campoNombre.value = "";
-    campoNombre.placeholder = PLACEHOLDER_NOMBRE;
-    btnEnviar.disabled = true;
+    borrarBusqueda();
     btnBuscar.disabled = false;
     reiniciarPanel();
     campoCodigo.focus();
   }
 
   btnBuscar.addEventListener("click", buscarEmpleado);
+  btnLimpiar.addEventListener("click", limpiarFormulario);
 
-	campoCodigo.addEventListener("keydown", (e) => {
-	  if (e.key === "Enter") e.preventDefault();
-	});
-
-  campoCodigo.addEventListener("input", () => {
-    campoNombre.value = "";
-    campoNombre.placeholder = PLACEHOLDER_NOMBRE;
-    btnEnviar.disabled = true;
+  campoCodigo.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") e.preventDefault();
   });
 
-  btnLimpiar.addEventListener("click", limpiarFormulario);
+  campoCodigo.addEventListener("input", borrarBusqueda);
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -221,13 +221,14 @@
       respuestas[n] = sel.value.toUpperCase();
     }
 
-	const datos = {
-	  codigo_empleado: campoCodigo.value.trim(),
-	  nombre: campoNombre.value,
-	  nombre_cuestionario: form.cuestionario.value,
-	  intento: Number(campoIntento.value) || 1,
-	  respuestas: JSON.stringify(respuestas)
-	};
+    const datos = {
+      codigo_empleado: campoCodigo.value.trim(),
+      nombre: campoNombre.value,
+      nombre_cuestionario: form.cuestionario.value,
+      intento: Number(campoIntento.value) || 1,
+      respuestas: JSON.stringify(respuestas)
+    };
+
     btnEnviar.disabled = true;
     mostrarResultado("Enviando...", ["Calculando el resultado."]);
 
@@ -237,10 +238,6 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos)
       });
-      if (res.status === 400) {
-        mostrarResultado("Código no válido", ["El código no existe o el empleado no está activo."]);
-        return;
-      }
       if (!res.ok) {
         mostrarResultado("Error al enviar", ["Código de error: " + res.status]);
         btnEnviar.disabled = false;
@@ -248,15 +245,16 @@
       }
       const r = await res.json();
       const aprobado = r.resultado === "Aprobado";
-      const nombreMostrado = r.nombre || campoNombre.value;
       mostrarResultado(datos.nombre_cuestionario, [
-        "Candidato: " + nombreMostrado,
+        "Candidato: " + datos.nombre,
         "Código de empleado: " + datos.codigo_empleado,
+        "Intento: " + r.intento,
         "Puntaje: " + r.puntaje + " de " + r.total + " (" + r.porcentaje + " %)",
         "Resultado: " + r.resultado
       ], aprobado ? "aprobado" : "no-aprobado");
       form.reset();
-      campoNombre.placeholder = PLACEHOLDER_NOMBRE;
+      campoNombre.placeholder = PH_NOMBRE;
+      campoIntento.placeholder = PH_INTENTO;
       btnEnviar.disabled = true;
     } catch (err) {
       mostrarResultado("No se pudo conectar", [err.message]);
