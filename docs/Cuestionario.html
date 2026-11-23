@@ -26,6 +26,7 @@
   .fila{display:flex;gap:10px}
   .fila input{flex:1}
   .grid2{display:grid;grid-template-columns:1fr 150px;gap:14px;margin-top:14px}
+  .grid2 .ancho{grid-column:1/-1}
   input[type=text],input[type=number],input:not([type]){width:100%;padding:10px 12px;border:1px solid #c3cfdb;border-radius:8px;font:inherit;color:var(--navy);background:#fff}
   input:focus{outline:2px solid var(--sky);border-color:var(--sky)}
   input[readonly]{background:#EEF3F8;color:var(--slate)}
@@ -78,7 +79,8 @@
           <button type="button" id="btnBuscar" class="btn-s">Buscar</button>
         </div>
         <div class="grid2">
-          <div><span class="label">Nombre</span><input name="nombre" placeholder="Se completa al buscar" readonly required></div>
+          <div class="ancho"><span class="label">Nombre</span><input name="nombre" placeholder="Se completa al buscar" readonly required></div>
+          <div><span class="label">Chapter</span><input name="chapter" placeholder="Se completa al buscar" readonly></div>
           <div><span class="label">Intento</span><input name="intento" placeholder="Se calcula al buscar" readonly></div>
         </div>
       </div>
@@ -137,6 +139,7 @@ const form = document.getElementById("cuestionario");
 const campoCodigo = form.codigo_empleado;
 const campoNombre = form.nombre;
 const campoIntento = form.intento;
+const campoChapter = form.chapter;
 const btnBuscar = document.getElementById("btnBuscar");
 const btnEnviar = document.getElementById("btnEnviar");
 const btnLimpiar = document.getElementById("btnLimpiar");
@@ -173,6 +176,7 @@ function reiniciarPanel() {
 function borrarBusqueda() {
   campoNombre.value = "";
   campoIntento.value = "";
+  campoChapter.value = "";
   campoNombre.placeholder = "Se completa al buscar";
   btnEnviar.disabled = true;
 }
@@ -193,6 +197,7 @@ async function buscarEmpleado() {
     const r = await res.json();
     campoNombre.value = r.nombre;
     campoIntento.value = r.intento;
+    campoChapter.value = r.chapter || "";
     btnEnviar.disabled = false;
   } catch (err) {
     campoNombre.placeholder = "Error de conexión";
@@ -218,6 +223,7 @@ form.addEventListener("submit", async (e) => {
     respuestas[`q${i}`] = sel.value.toUpperCase();
   }
 
+  const chapterEnviado = campoChapter.value;
   const datos = {
     codigo_empleado: campoCodigo.value,
     nombre: campoNombre.value,
@@ -243,6 +249,7 @@ form.addEventListener("submit", async (e) => {
     mostrarResultado(datos.nombre_cuestionario, [
       "Candidato: " + datos.nombre,
       "Código de empleado: " + datos.codigo_empleado,
+      "Chapter: " + (chapterEnviado || "—"),
       "Intento: " + (r.intento ?? datos.intento),
       "Puntaje: " + r.puntaje + " de " + r.total + " (" + r.porcentaje + " %)"
     ], aprobo ? "aprobado" : "no-aprobado", r.resultado);
