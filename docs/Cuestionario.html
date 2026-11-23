@@ -70,6 +70,14 @@
   .pie .acciones{flex-direction:column;justify-content:center}
   .pie .panel-resultado{position:static;min-height:96px;border-radius:16px}
   @media(max-width:860px){.libro{grid-template-columns:1fr}.libro::before{display:none}.pagina.izq,.pagina.der{background:#fff}.pie{grid-template-columns:1fr}.pie .acciones{flex-direction:row}}
+
+  main{max-width:none;padding-left:3vw;padding-right:3vw}
+  .topbar .in{max-width:none}
+  .panel-resultado{margin:0 0 20px;min-height:84px;border-radius:16px;position:static}
+  .pie{display:flex;justify-content:flex-end;grid-template-columns:none}
+  .pie .acciones{flex-direction:row;margin-top:0}
+  .pagina{padding:28px 3vw 44px}
+  @media(max-width:860px){.pie{justify-content:flex-start}.pagina{padding:24px 20px 44px}}
 </style>
 </head>
 <body>
@@ -84,6 +92,7 @@
 
   <form id="cuestionario">
     <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
+    <aside id="resultado" class="panel-resultado"></aside>
     <div class="libro">
       <section class="pagina izq" data-pag="1">
         <div class="card">
@@ -137,7 +146,6 @@
         <button type="submit" id="btnEnviar" class="btn-p" disabled>Enviar</button>
         <button type="button" id="btnLimpiar" class="btn-s">Limpiar</button>
       </div>
-      <aside id="resultado" class="panel-resultado"></aside>
     </div>
   </form>
 </main>
