@@ -11,11 +11,15 @@
     .campo { display: block; margin-top: 12px; }
     .campo input { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
     .campo input[readonly] { background: #f0f0f0; }
+    .fila-codigo { display: flex; gap: 8px; align-items: stretch; margin-top: 4px; }
+    .fila-codigo input { margin-top: 0; flex: 1; }
     fieldset { margin: 16px 0; border: 1px solid #ccc; border-radius: 8px; padding: 12px 16px; }
     legend { font-weight: bold; padding: 0 6px; }
     label.opcion { display: block; margin: 6px 0; cursor: pointer; }
     button { padding: 10px 24px; font-size: 16px; cursor: pointer; }
+    button.secundario { padding: 8px 16px; font-size: 14px; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .acciones { display: flex; gap: 12px; }
     .panel-resultado {
       position: sticky; top: 16px;
       border: 1px solid #ccc; border-radius: 8px;
@@ -38,14 +42,17 @@
     <form id="cuestionario">
       <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
 
-      <label class="campo">
-        Código de empleado
-        <input name="codigo_empleado" required inputmode="numeric" pattern="[0-9]+" maxlength="10">
-      </label>
+      <div class="campo">
+        <label for="codigo_empleado">Código de empleado</label>
+        <div class="fila-codigo">
+          <input id="codigo_empleado" name="codigo_empleado" required inputmode="numeric" pattern="[0-9]+" maxlength="10" autocomplete="off">
+          <button type="button" id="btnBuscar" class="secundario">Buscar</button>
+        </div>
+      </div>
 
       <label class="campo">
         Nombre del candidato
-        <input name="nombre" readonly placeholder="Se completa al ingresar el código">
+        <input name="nombre" readonly placeholder="Ingresa el código y presiona Buscar">
       </label>
 
       <fieldset>
@@ -83,7 +90,10 @@
         <label class="opcion"><input type="radio" name="q5" value="c"> @Transient</label>
       </fieldset>
 
-      <button type="submit" id="btnEnviar" disabled>Enviar</button>
+      <div class="acciones">
+        <button type="submit" id="btnEnviar" disabled>Enviar</button>
+        <button type="button" id="btnLimpiar">Limpiar</button>
+      </div>
     </form>
 
     <aside id="resultado" class="panel-resultado">
@@ -100,30 +110,30 @@
   const campoCodigo = form.codigo_empleado;
   const campoNombre = form.nombre;
   const btnEnviar = document.getElementById("btnEnviar");
+  const btnBuscar = document.getElementById("btnBuscar");
+  const btnLimpiar = document.getElementById("btnLimpiar");
+  const panel = document.getElementById("resultado");
   const cacheNombres = {};
-  const PLACEHOLDER_NOMBRE = "Se completa al ingresar el código";
+  const PLACEHOLDER_NOMBRE = "Ingresa el código y presiona Buscar";
 
   function mostrarResultado(titulo, lineas, clase) {
-    const cont = document.getElementById("resultado");
-    cont.textContent = "";
+    panel.textContent = "";
     const h = document.createElement("h2");
     h.textContent = titulo;
-    cont.appendChild(h);
+    panel.appendChild(h);
     lineas.forEach((texto) => {
       const p = document.createElement("p");
       p.textContent = texto;
       if (clase) p.className = clase;
-      cont.appendChild(p);
+      panel.appendChild(p);
     });
   }
 
-  campoCodigo.addEventListener("input", () => {
-    campoNombre.value = "";
-    campoNombre.placeholder = PLACEHOLDER_NOMBRE;
-    btnEnviar.disabled = true;
-  });
+  function reiniciarPanel() {
+    mostrarResultado("Resultado", ["Aquí aparecerá el resultado al enviar el cuestionario."]);
+  }
 
-  campoCodigo.addEventListener("change", async () => {
+  async function buscarEmpleado() {
     campoNombre.value = "";
     btnEnviar.disabled = true;
     const codigo = campoCodigo.value.trim();
@@ -140,6 +150,7 @@
     }
 
     campoNombre.placeholder = "Buscando...";
+    btnBuscar.disabled = true;
     try {
       const res = await fetch(URL_CONSULTA, {
         method: "POST",
@@ -157,14 +168,40 @@
       }
     } catch (err) {
       campoNombre.placeholder = "No se pudo consultar";
+    } finally {
+      btnBuscar.disabled = false;
     }
+  }
+
+  function limpiarFormulario() {
+    form.reset();
+    campoNombre.value = "";
+    campoNombre.placeholder = PLACEHOLDER_NOMBRE;
+    btnEnviar.disabled = true;
+    btnBuscar.disabled = false;
+    reiniciarPanel();
+    campoCodigo.focus();
+  }
+
+  btnBuscar.addEventListener("click", buscarEmpleado);
+
+	campoCodigo.addEventListener("keydown", (e) => {
+	  if (e.key === "Enter") e.preventDefault();
+	});
+
+  campoCodigo.addEventListener("input", () => {
+    campoNombre.value = "";
+    campoNombre.placeholder = PLACEHOLDER_NOMBRE;
+    btnEnviar.disabled = true;
   });
+
+  btnLimpiar.addEventListener("click", limpiarFormulario);
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     if (!campoNombre.value) {
-      mostrarResultado("Código no válido", ["Ingresa un código de empleado activo."]);
+      mostrarResultado("Código no válido", ["Busca un código de empleado activo antes de enviar."]);
       return;
     }
 
@@ -205,8 +242,9 @@
       }
       const r = await res.json();
       const aprobado = r.resultado === "Aprobado";
+      const nombreMostrado = r.nombre || campoNombre.value;
       mostrarResultado(datos.nombre_cuestionario, [
-        "Candidato: " + (r.nombre || campoNombre.value),
+        "Candidato: " + nombreMostrado,
         "Código de empleado: " + datos.codigo_empleado,
         "Puntaje: " + r.puntaje + " de " + r.total + " (" + r.porcentaje + " %)",
         "Resultado: " + r.resultado
