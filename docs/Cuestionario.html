@@ -15,6 +15,7 @@
     legend { font-weight: bold; padding: 0 6px; }
     label.opcion { display: block; margin: 6px 0; cursor: pointer; }
     button { padding: 10px 24px; font-size: 16px; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
     .panel-resultado {
       position: sticky; top: 16px;
       border: 1px solid #ccc; border-radius: 8px;
@@ -82,7 +83,7 @@
         <label class="opcion"><input type="radio" name="q5" value="c"> @Transient</label>
       </fieldset>
 
-      <button type="submit">Enviar</button>
+      <button type="submit" id="btnEnviar" disabled>Enviar</button>
     </form>
 
     <aside id="resultado" class="panel-resultado">
@@ -98,6 +99,9 @@
   const form = document.getElementById("cuestionario");
   const campoCodigo = form.codigo_empleado;
   const campoNombre = form.nombre;
+  const btnEnviar = document.getElementById("btnEnviar");
+  const cacheNombres = {};
+  const PLACEHOLDER_NOMBRE = "Se completa al ingresar el código";
 
   function mostrarResultado(titulo, lineas, clase) {
     const cont = document.getElementById("resultado");
@@ -113,13 +117,28 @@
     });
   }
 
+  campoCodigo.addEventListener("input", () => {
+    campoNombre.value = "";
+    campoNombre.placeholder = PLACEHOLDER_NOMBRE;
+    btnEnviar.disabled = true;
+  });
+
   campoCodigo.addEventListener("change", async () => {
     campoNombre.value = "";
+    btnEnviar.disabled = true;
     const codigo = campoCodigo.value.trim();
+
     if (!/^[0-9]+$/.test(codigo)) {
       campoNombre.placeholder = "Ingresa solo números";
       return;
     }
+
+    if (cacheNombres[codigo]) {
+      campoNombre.value = cacheNombres[codigo];
+      btnEnviar.disabled = false;
+      return;
+    }
+
     campoNombre.placeholder = "Buscando...";
     try {
       const res = await fetch(URL_CONSULTA, {
@@ -127,9 +146,12 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ codigo_empleado: codigo })
       });
+      if (codigo !== campoCodigo.value.trim()) return;
       if (res.ok) {
         const r = await res.json();
+        cacheNombres[codigo] = r.nombre;
         campoNombre.value = r.nombre;
+        btnEnviar.disabled = false;
       } else {
         campoNombre.placeholder = "Código no encontrado o inactivo";
       }
@@ -163,6 +185,9 @@
       respuestas: JSON.stringify(respuestas)
     };
 
+    btnEnviar.disabled = true;
+    mostrarResultado("Enviando...", ["Calculando el resultado."]);
+
     try {
       const res = await fetch(URL_FLUJO, {
         method: "POST",
@@ -175,6 +200,7 @@
       }
       if (!res.ok) {
         mostrarResultado("Error al enviar", ["Código de error: " + res.status]);
+        btnEnviar.disabled = false;
         return;
       }
       const r = await res.json();
@@ -186,9 +212,11 @@
         "Resultado: " + r.resultado
       ], aprobado ? "aprobado" : "no-aprobado");
       form.reset();
-      campoNombre.placeholder = "Se completa al ingresar el código";
+      campoNombre.placeholder = PLACEHOLDER_NOMBRE;
+      btnEnviar.disabled = true;
     } catch (err) {
       mostrarResultado("No se pudo conectar", [err.message]);
+      btnEnviar.disabled = false;
     }
   });
   </script>
