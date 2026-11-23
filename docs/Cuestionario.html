@@ -172,7 +172,6 @@
     <div class="pie">
       <div class="acciones">
         <button type="submit" id="btnEnviar" class="btn-p" disabled>Enviar</button>
-        <button type="button" id="btnLimpiar" class="btn-s">Limpiar</button>
       </div>
     </div>
   </form>
@@ -190,13 +189,13 @@ const campoIntento = form.intento;
 const campoChapter = form.chapter;
 const btnBuscar = document.getElementById("btnBuscar");
 const btnEnviar = document.getElementById("btnEnviar");
-const btnLimpiar = document.getElementById("btnLimpiar");
 const panel = document.getElementById("resultado");
 
 
 let timerId = null;
 let finAt = 0;
 let enviando = false;
+let completado = false;
 const reloj = document.getElementById("reloj");
 const relojValor = document.getElementById("relojValor");
 
@@ -261,6 +260,8 @@ function reiniciarPanel() {
 
 function borrarBusqueda() {
   detenerTemporizador();
+  completado = false;
+  form.querySelectorAll('input[type="radio"]').forEach((r) => { r.disabled = false; });
   form.classList.add("inicio");
   campoNombre.value = "";
   campoIntento.value = "";
@@ -275,6 +276,7 @@ async function buscarEmpleado() {
   const codigo = campoCodigo.value.trim();
   if (!codigo) { campoNombre.placeholder = "Ingresa un código"; return; }
   borrarBusqueda();
+  reiniciarPanel();
   campoNombre.placeholder = "Buscando...";
   campoChapter.placeholder = "Buscando...";
   campoIntento.placeholder = "Buscando...";
@@ -310,29 +312,42 @@ async function buscarEmpleado() {
 btnBuscar.addEventListener("click", buscarEmpleado);
 campoCodigo.addEventListener("keydown", (e) => { if (e.key === "Enter") e.preventDefault(); });
 campoCodigo.addEventListener("input", () => { campoCodigo.value = campoCodigo.value.replace(/\D/g, ""); borrarBusqueda(); });
-btnLimpiar.addEventListener("click", () => { form.reset(); borrarBusqueda(); reiniciarPanel(); });
 
-async function enviar(auto) {
-  if (enviando) return;
+function armarDatos() {
   const respuestas = {};
+  let faltan = false;
   for (let i = 1; i <= 5; i++) {
     const sel = form.querySelector(`input[name="q${i}"]:checked`);
-    if (!sel && !auto) {
-      mostrarResultado("Faltan respuestas", ["Responde todas las preguntas antes de enviar."]);
-      return;
-    }
+    if (!sel) faltan = true;
     respuestas[`q${i}`] = sel ? sel.value.toUpperCase() : "";
+  }
+  return {
+    faltan,
+    datos: {
+      codigo_empleado: campoCodigo.value,
+      nombre: campoNombre.value,
+      nombre_cuestionario: form.cuestionario.value,
+      intento: Number(campoIntento.value) || 1,
+      respuestas: JSON.stringify(respuestas)
+    }
+  };
+}
+
+function volverAlInicio() {
+  form.reset();
+  borrarBusqueda();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function enviar(auto) {
+  if (enviando || completado) return;
+  const { datos, faltan } = armarDatos();
+  if (faltan && !auto) {
+    mostrarResultado("Faltan respuestas", ["Responde todas las preguntas antes de enviar."]);
+    return;
   }
 
   const chapterEnviado = campoChapter.value;
-  const datos = {
-    codigo_empleado: campoCodigo.value,
-    nombre: campoNombre.value,
-    nombre_cuestionario: form.cuestionario.value,
-    intento: Number(campoIntento.value) || 1,
-    respuestas: JSON.stringify(respuestas)
-  };
-
   enviando = true;
   btnEnviar.disabled = true;
   try {
@@ -357,8 +372,8 @@ async function enviar(auto) {
     ];
     if (auto) lineas.unshift("Tiempo agotado: se envió automáticamente.");
     mostrarResultado(datos.nombre_cuestionario, lineas, aprobo ? "aprobado" : "no-aprobado", r.resultado);
-    form.reset();
-    borrarBusqueda();
+    completado = true;
+    volverAlInicio();
   } catch (err) {
     mostrarResultado("No se pudo conectar", [err.message]);
     btnEnviar.disabled = false;
@@ -366,6 +381,20 @@ async function enviar(auto) {
     enviando = false;
   }
 }
+
+// Si recargan (F5) o cierran la página con el cuestionario en curso, se envía lo respondido.
+window.addEventListener("pagehide", () => {
+  if (form.classList.contains("inicio") || completado || enviando) return;
+  const { datos } = armarDatos();
+  try {
+    fetch(URL_FLUJO, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+      keepalive: true
+    });
+  } catch (err) { /* sin acción */ }
+});
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
