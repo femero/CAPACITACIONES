@@ -94,6 +94,14 @@
   .reloj.alerta{border-color:#FF7A00}.reloj.alerta .v{color:#FF7A00}
   .reloj.critico{border-color:#ff4d45;animation:pulso 1s infinite}.reloj.critico .v{color:#ff7b75}
   @keyframes pulso{50%{opacity:.6}}
+
+  .aviso{display:none;margin:14px 0 0;font-size:13px;color:var(--slate)}
+  .inicio .aviso{display:block}
+  .inicio .libro{grid-template-columns:1fr;max-width:680px;margin:0 auto}
+  .inicio .libro::before,.inicio .pagina.der,.inicio .card.q,.inicio .pie{display:none}
+  .inicio .pagina.izq{background:#fff;padding-bottom:52px}
+  form:not(.inicio) .libro{animation:aparecer .35s ease}
+  @keyframes aparecer{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -105,7 +113,7 @@
 <div id="reloj" class="reloj" role="timer" aria-live="off"><span class="t">Tiempo restante</span><span class="v" id="relojValor">--:--</span></div>
 <main>
 
-  <form id="cuestionario">
+  <form id="cuestionario" class="inicio">
     <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
     <div class="cabecera">
       <div class="titulo"><h1>Cuestionario de <span>Java y Spring</span></h1>
@@ -125,14 +133,15 @@
           <div><span class="label">Chapter</span><input name="chapter" placeholder="Se completa al buscar" readonly></div>
           <div><span class="label">Intento</span><input name="intento" placeholder="Se calcula al buscar" readonly></div>
         </div>
+        <p class="aviso">Al buscar se mostrarán las preguntas y, si el cuestionario tiene tiempo límite, comenzará a correr.</p>
       </div>
-        <div class="card"><fieldset>
+        <div class="card q"><fieldset>
         <legend><span class="n">1</span>¿Qué anotación marca una clase como servicio en Spring?</legend>
         <label class="opcion"><input type="radio" name="q1" value="a"> @Service</label>
         <label class="opcion"><input type="radio" name="q1" value="b"> @Entity</label>
         <label class="opcion"><input type="radio" name="q1" value="c"> @Table</label>
       </fieldset></div>
-        <div class="card"><fieldset>
+        <div class="card q"><fieldset>
         <legend><span class="n">2</span>¿Qué método HTTP se usa normalmente para crear un recurso?</legend>
         <label class="opcion"><input type="radio" name="q2" value="a"> GET</label>
         <label class="opcion"><input type="radio" name="q2" value="b"> DELETE</label>
@@ -140,19 +149,19 @@
       </fieldset></div>
       </section>
       <section class="pagina der" data-pag="2">
-        <div class="card"><fieldset>
+        <div class="card q"><fieldset>
         <legend><span class="n">3</span>¿Qué palabra clave impide que una variable cambie su valor en Java?</legend>
         <label class="opcion"><input type="radio" name="q3" value="a"> static</label>
         <label class="opcion"><input type="radio" name="q3" value="b"> final</label>
         <label class="opcion"><input type="radio" name="q3" value="c"> void</label>
       </fieldset></div>
-        <div class="card"><fieldset>
+        <div class="card q"><fieldset>
         <legend><span class="n">4</span>¿Qué código de estado HTTP indica que un recurso fue creado?</legend>
         <label class="opcion"><input type="radio" name="q4" value="a"> 200</label>
         <label class="opcion"><input type="radio" name="q4" value="b"> 201</label>
         <label class="opcion"><input type="radio" name="q4" value="c"> 404</label>
       </fieldset></div>
-        <div class="card"><fieldset>
+        <div class="card q"><fieldset>
         <legend><span class="n">5</span>¿Qué anotación de JPA define la clave primaria?</legend>
         <label class="opcion"><input type="radio" name="q5" value="a"> @Column</label>
         <label class="opcion"><input type="radio" name="q5" value="b"> @Id</label>
@@ -252,6 +261,7 @@ function reiniciarPanel() {
 
 function borrarBusqueda() {
   detenerTemporizador();
+  form.classList.add("inicio");
   campoNombre.value = "";
   campoIntento.value = "";
   campoChapter.value = "";
@@ -286,6 +296,7 @@ async function buscarEmpleado() {
     campoIntento.value = r.intento;
     campoChapter.value = r.chapter || "";
     btnEnviar.disabled = false;
+    form.classList.remove("inicio");
     iniciarTemporizador(r.tiempo_minutos);
   } catch (err) {
     campoNombre.placeholder = "Error de conexión";
