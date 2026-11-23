@@ -85,6 +85,15 @@
   .cabecera .titulo .sub{margin:0}
   .cabecera .panel-resultado{margin:0;min-height:110px}
   @media(max-width:860px){.cabecera{grid-template-columns:1fr}}
+
+  .reloj{position:fixed;top:11px;right:3vw;z-index:20;display:none;align-items:center;gap:10px;background:var(--navy);color:#fff;border-radius:999px;padding:6px 18px;box-shadow:0 6px 18px rgba(7,15,38,.25);border:2px solid var(--cyan)}
+  .reloj.activo{display:flex}
+  body.con-reloj .tag{visibility:hidden}
+  .reloj .t{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);font-weight:bold}
+  .reloj .v{font-size:22px;font-weight:bold;font-variant-numeric:tabular-nums}
+  .reloj.alerta{border-color:#FF7A00}.reloj.alerta .v{color:#FF7A00}
+  .reloj.critico{border-color:#ff4d45;animation:pulso 1s infinite}.reloj.critico .v{color:#ff7b75}
+  @keyframes pulso{50%{opacity:.6}}
 </style>
 </head>
 <body>
@@ -93,6 +102,7 @@
   <div class="tag">AI Academy · Capacitaciones</div>
 </div></header>
 
+<div id="reloj" class="reloj" role="timer" aria-live="off"><span class="t">Tiempo restante</span><span class="v" id="relojValor">--:--</span></div>
 <main>
 
   <form id="cuestionario">
@@ -105,9 +115,9 @@
     <div class="libro">
       <section class="pagina izq" data-pag="1">
         <div class="card">
-        <span class="label">Código de empleado</span>
+        <span class="label">Datos del candidato</span>
         <div class="fila">
-          <input name="codigo_empleado" type="text" inputmode="numeric" autocomplete="off" placeholder="Ingresa tu código de empleado" required>
+          <input name="codigo_empleado" type="text" inputmode="numeric" autocomplete="off" placeholder="Código de empleado" required>
           <button type="button" id="btnBuscar" class="btn-s">Buscar</button>
         </div>
         <div class="grid2">
@@ -174,6 +184,44 @@ const btnEnviar = document.getElementById("btnEnviar");
 const btnLimpiar = document.getElementById("btnLimpiar");
 const panel = document.getElementById("resultado");
 
+
+let timerId = null;
+let finAt = 0;
+let enviando = false;
+const reloj = document.getElementById("reloj");
+const relojValor = document.getElementById("relojValor");
+
+function detenerTemporizador() {
+  if (timerId !== null) { clearInterval(timerId); timerId = null; }
+  reloj.className = "reloj";
+  document.body.classList.remove("con-reloj");
+  campoCodigo.disabled = false;
+  btnBuscar.disabled = false;
+}
+
+function pintarReloj(ms) {
+  const total = Math.ceil(ms / 1000);
+  const m = String(Math.floor(total / 60)).padStart(2, "0");
+  const sg = String(total % 60).padStart(2, "0");
+  relojValor.textContent = m + ":" + sg;
+  document.body.classList.add("con-reloj");
+  reloj.className = "reloj activo" + (total <= 15 ? " critico" : total <= 60 ? " alerta" : "");
+}
+
+function iniciarTemporizador(minutos) {
+  const mins = Number(minutos);
+  if (!(mins > 0)) return;
+  finAt = Date.now() + mins * 60000;
+  campoCodigo.disabled = true;
+  btnBuscar.disabled = true;
+  pintarReloj(mins * 60000);
+  timerId = setInterval(() => {
+    const resto = Math.max(0, finAt - Date.now());
+    pintarReloj(resto);
+    if (resto === 0 && !enviando) enviar(true);
+  }, 250);
+}
+
 function mostrarResultado(titulo, lineas, clase, estado) {
   panel.textContent = "";
   panel.className = "panel-resultado" + (clase ? " " + clase : "");
@@ -203,6 +251,7 @@ function reiniciarPanel() {
 }
 
 function borrarBusqueda() {
+  detenerTemporizador();
   campoNombre.value = "";
   campoIntento.value = "";
   campoChapter.value = "";
@@ -232,12 +281,13 @@ async function buscarEmpleado() {
     campoIntento.value = r.intento;
     campoChapter.value = r.chapter || "";
     btnEnviar.disabled = false;
+    iniciarTemporizador(r.tiempo_minutos);
   } catch (err) {
     campoNombre.placeholder = "Error de conexión";
   } finally {
     campoChapter.placeholder = "Se completa al buscar";
     campoIntento.placeholder = "Se calcula al buscar";
-    btnBuscar.disabled = false;
+    btnBuscar.disabled = timerId !== null;
   }
 }
 
@@ -246,16 +296,16 @@ campoCodigo.addEventListener("keydown", (e) => { if (e.key === "Enter") e.preven
 campoCodigo.addEventListener("input", () => { campoCodigo.value = campoCodigo.value.replace(/\D/g, ""); borrarBusqueda(); });
 btnLimpiar.addEventListener("click", () => { form.reset(); borrarBusqueda(); reiniciarPanel(); });
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+async function enviar(auto) {
+  if (enviando) return;
   const respuestas = {};
   for (let i = 1; i <= 5; i++) {
     const sel = form.querySelector(`input[name="q${i}"]:checked`);
-    if (!sel) {
+    if (!sel && !auto) {
       mostrarResultado("Faltan respuestas", ["Responde todas las preguntas antes de enviar."]);
       return;
     }
-    respuestas[`q${i}`] = sel.value.toUpperCase();
+    respuestas[`q${i}`] = sel ? sel.value.toUpperCase() : "";
   }
 
   const chapterEnviado = campoChapter.value;
@@ -267,6 +317,7 @@ form.addEventListener("submit", async (e) => {
     respuestas: JSON.stringify(respuestas)
   };
 
+  enviando = true;
   btnEnviar.disabled = true;
   try {
     const res = await fetch(URL_FLUJO, {
@@ -281,19 +332,28 @@ form.addEventListener("submit", async (e) => {
     }
     const r = await res.json();
     const aprobo = r.resultado === "Aprobado";
-    mostrarResultado(datos.nombre_cuestionario, [
+    const lineas = [
       "Candidato: " + datos.nombre,
       "Código de empleado: " + datos.codigo_empleado,
       "Chapter: " + (chapterEnviado || "—"),
       "Intento: " + (r.intento ?? datos.intento),
       "Puntaje: " + r.puntaje + " de " + r.total + " (" + r.porcentaje + " %)"
-    ], aprobo ? "aprobado" : "no-aprobado", r.resultado);
+    ];
+    if (auto) lineas.unshift("Tiempo agotado: se envió automáticamente.");
+    mostrarResultado(datos.nombre_cuestionario, lineas, aprobo ? "aprobado" : "no-aprobado", r.resultado);
     form.reset();
     borrarBusqueda();
   } catch (err) {
     mostrarResultado("No se pudo conectar", [err.message]);
     btnEnviar.disabled = false;
+  } finally {
+    enviando = false;
   }
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  enviar(false);
 });
 
 reiniciarPanel();
