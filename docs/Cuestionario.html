@@ -207,6 +207,8 @@ function borrarBusqueda() {
   campoIntento.value = "";
   campoChapter.value = "";
   campoNombre.placeholder = "Se completa al buscar";
+  campoChapter.placeholder = "Se completa al buscar";
+  campoIntento.placeholder = "Se calcula al buscar";
   btnEnviar.disabled = true;
 }
 
@@ -215,6 +217,8 @@ async function buscarEmpleado() {
   if (!codigo) { campoNombre.placeholder = "Ingresa un código"; return; }
   borrarBusqueda();
   campoNombre.placeholder = "Buscando...";
+  campoChapter.placeholder = "Buscando...";
+  campoIntento.placeholder = "Buscando...";
   btnBuscar.disabled = true;
   try {
     const res = await fetch(URL_CONSULTA, {
@@ -231,6 +235,8 @@ async function buscarEmpleado() {
   } catch (err) {
     campoNombre.placeholder = "Error de conexión";
   } finally {
+    campoChapter.placeholder = "Se completa al buscar";
+    campoIntento.placeholder = "Se calcula al buscar";
     btnBuscar.disabled = false;
   }
 }
