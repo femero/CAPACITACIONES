@@ -78,6 +78,13 @@
   .pie .acciones{flex-direction:row;margin-top:0}
   .pagina{padding:28px 3vw 44px}
   @media(max-width:860px){.pie{justify-content:flex-start}.pagina{padding:24px 20px 44px}}
+
+  .cabecera{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;margin-bottom:20px}
+  .cabecera .titulo{display:flex;flex-direction:column;justify-content:center}
+  .cabecera .titulo h1{margin:0 0 6px}
+  .cabecera .titulo .sub{margin:0}
+  .cabecera .panel-resultado{margin:0;min-height:110px}
+  @media(max-width:860px){.cabecera{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -87,12 +94,14 @@
 </div></header>
 
 <main>
-  <h1>Cuestionario de <span>Java y Spring</span></h1>
-  <p class="sub">Ingresa tu código de empleado, valida tus datos y responde las preguntas.</p>
 
   <form id="cuestionario">
     <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
-    <aside id="resultado" class="panel-resultado"></aside>
+    <div class="cabecera">
+      <div class="titulo"><h1>Cuestionario de <span>Java y Spring</span></h1>
+      <p class="sub">Ingresa tu código de empleado, valida tus datos y responde las preguntas.</p></div>
+      <aside id="resultado" class="panel-resultado"></aside>
+    </div>
     <div class="libro">
       <section class="pagina izq" data-pag="1">
         <div class="card">
