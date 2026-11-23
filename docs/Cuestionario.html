@@ -56,6 +56,20 @@
   .no-aprobado p.estado{color:#ff7b75}
   footer{text-align:center;color:var(--gray);font-size:12px;padding:0 0 24px}
   @media(max-width:760px){.layout{grid-template-columns:1fr}.panel-resultado{position:static;order:-1}.grid2{grid-template-columns:1fr}h1{font-size:24px}}
+
+  main{max-width:1100px}
+  .libro{display:grid;grid-template-columns:1fr 1fr;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(7,15,38,.10);overflow:hidden;position:relative}
+  .libro::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--line);transform:translateX(-1px);z-index:1}
+  .pagina{padding:28px 32px 44px;position:relative;display:flex;flex-direction:column;gap:18px}
+  .pagina.izq{background:linear-gradient(to left,rgba(7,15,38,.06),rgba(7,15,38,0) 48px),#fff}
+  .pagina.der{background:linear-gradient(to right,rgba(7,15,38,.06),rgba(7,15,38,0) 48px),#fff}
+  .pagina::after{content:"— " attr(data-pag) " —";position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;color:var(--gray);letter-spacing:.1em}
+  .pagina .card{margin:0;border:0;border-top:3px solid var(--blue);border-radius:0;box-shadow:none;background:transparent;padding:14px 0 0}
+  .pagina legend{font-size:15px}
+  .pie{margin-top:20px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:stretch}
+  .pie .acciones{flex-direction:column;justify-content:center}
+  .pie .panel-resultado{position:static;min-height:96px;border-radius:16px}
+  @media(max-width:860px){.libro{grid-template-columns:1fr}.libro::before{display:none}.pagina.izq,.pagina.der{background:#fff}.pie{grid-template-columns:1fr}.pie .acciones{flex-direction:row}}
 </style>
 </head>
 <body>
@@ -68,11 +82,11 @@
   <h1>Cuestionario de <span>Java y Spring</span></h1>
   <p class="sub">Ingresa tu código de empleado, valida tus datos y responde las preguntas.</p>
 
-  <div class="layout">
-    <form id="cuestionario">
-      <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
-
-      <div class="card">
+  <form id="cuestionario">
+    <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
+    <div class="libro">
+      <section class="pagina izq" data-pag="1">
+        <div class="card">
         <span class="label">Datos del candidato</span>
         <div class="fila">
           <input name="codigo_empleado" type="text" inputmode="numeric" autocomplete="off" placeholder="Código de empleado" required>
@@ -84,50 +98,48 @@
           <div><span class="label">Intento</span><input name="intento" placeholder="Se calcula al buscar" readonly></div>
         </div>
       </div>
-
-      <div class="card"><fieldset>
+        <div class="card"><fieldset>
         <legend><span class="n">1</span>¿Qué anotación marca una clase como servicio en Spring?</legend>
         <label class="opcion"><input type="radio" name="q1" value="a"> @Service</label>
         <label class="opcion"><input type="radio" name="q1" value="b"> @Entity</label>
         <label class="opcion"><input type="radio" name="q1" value="c"> @Table</label>
       </fieldset></div>
-
-      <div class="card"><fieldset>
+        <div class="card"><fieldset>
         <legend><span class="n">2</span>¿Qué método HTTP se usa normalmente para crear un recurso?</legend>
         <label class="opcion"><input type="radio" name="q2" value="a"> GET</label>
         <label class="opcion"><input type="radio" name="q2" value="b"> DELETE</label>
         <label class="opcion"><input type="radio" name="q2" value="c"> POST</label>
       </fieldset></div>
-
-      <div class="card"><fieldset>
+      </section>
+      <section class="pagina der" data-pag="2">
+        <div class="card"><fieldset>
         <legend><span class="n">3</span>¿Qué palabra clave impide que una variable cambie su valor en Java?</legend>
         <label class="opcion"><input type="radio" name="q3" value="a"> static</label>
         <label class="opcion"><input type="radio" name="q3" value="b"> final</label>
         <label class="opcion"><input type="radio" name="q3" value="c"> void</label>
       </fieldset></div>
-
-      <div class="card"><fieldset>
+        <div class="card"><fieldset>
         <legend><span class="n">4</span>¿Qué código de estado HTTP indica que un recurso fue creado?</legend>
         <label class="opcion"><input type="radio" name="q4" value="a"> 200</label>
         <label class="opcion"><input type="radio" name="q4" value="b"> 201</label>
         <label class="opcion"><input type="radio" name="q4" value="c"> 404</label>
       </fieldset></div>
-
-      <div class="card"><fieldset>
+        <div class="card"><fieldset>
         <legend><span class="n">5</span>¿Qué anotación de JPA define la clave primaria?</legend>
         <label class="opcion"><input type="radio" name="q5" value="a"> @Column</label>
         <label class="opcion"><input type="radio" name="q5" value="b"> @Id</label>
         <label class="opcion"><input type="radio" name="q5" value="c"> @Transient</label>
       </fieldset></div>
-
+      </section>
+    </div>
+    <div class="pie">
       <div class="acciones">
         <button type="submit" id="btnEnviar" class="btn-p" disabled>Enviar</button>
         <button type="button" id="btnLimpiar" class="btn-s">Limpiar</button>
       </div>
-    </form>
-
-    <aside id="resultado" class="panel-resultado"></aside>
-  </div>
+      <aside id="resultado" class="panel-resultado"></aside>
+    </div>
+  </form>
 </main>
 <footer>© NTT DATA · Uso interno</footer>
 
