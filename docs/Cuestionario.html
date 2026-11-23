@@ -55,6 +55,11 @@
         <input name="nombre" readonly placeholder="Ingresa el código y presiona Buscar">
       </label>
 
+      <label class="campo">
+        Intento
+        <input name="intento" readonly placeholder="Se calcula al buscar">
+      </label>
+	  
       <fieldset>
         <legend>1. ¿Qué anotación marca una clase como servicio en Spring?</legend>
         <label class="opcion"><input type="radio" name="q1" value="a"> @Service</label>
@@ -216,12 +221,13 @@
       respuestas[n] = sel.value.toUpperCase();
     }
 
-    const datos = {
-      codigo_empleado: campoCodigo.value.trim(),
-      nombre_cuestionario: form.cuestionario.value,
-      respuestas: JSON.stringify(respuestas)
-    };
-
+	const datos = {
+	  codigo_empleado: campoCodigo.value.trim(),
+	  nombre: campoNombre.value,
+	  nombre_cuestionario: form.cuestionario.value,
+	  intento: Number(campoIntento.value) || 1,
+	  respuestas: JSON.stringify(respuestas)
+	};
     btnEnviar.disabled = true;
     mostrarResultado("Enviando...", ["Calculando el resultado."]);
 
