@@ -78,7 +78,7 @@
   /* Navegación */
   .pie{margin-top:28px;padding-top:18px;border-top:1px solid var(--line)}
   .nav{display:flex;align-items:center;gap:20px}
-  .progreso{flex:1;text-align:center;font-size:13px;color:var(--slate)}
+  .progreso{flex:1;text-align:left;font-size:13px;color:var(--slate)}
   .barra{height:4px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden}
   .barra i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
   button{font:inherit;font-weight:bold;border-radius:4px;padding:10px 22px;cursor:pointer;transition:background .12s}
@@ -162,7 +162,7 @@
         <ol>
           <li><span>Ingresa tu código de empleado.</span></li>
           <li><span>Pulsa <strong>Buscar</strong> para validar tus datos.</span></li>
-          <li><span>Responde las preguntas; se muestran en páginas de 5.</span></li>
+          <li><span>Responde las preguntas; se muestran <strong><span id="infoPorPagina2">2</span> por página</strong>.</span></li>
           <li><span>En la última página, pulsa <strong>Enviar</strong>.</span></li>
         </ol>
       </div>
@@ -170,8 +170,8 @@
         <h3>Sobre el cuestionario</h3>
         <dl>
           <dt>Preguntas</dt><dd id="infoTotal">20</dd>
-          <dt>Páginas</dt><dd id="infoPaginas">4</dd>
-          <dt>Preguntas por página</dt><dd id="infoPorPagina">5</dd>
+          <dt>Páginas</dt><dd id="infoPaginas">10</dd>
+          <dt>Preguntas por página</dt><dd id="infoPorPagina">2</dd>
           <dt>Tipo de respuesta</dt><dd>Opción única</dd>
           <dt>Intentos por persona</dt><dd>1</dd>
         </dl>
@@ -182,6 +182,7 @@
           <li>Si el cuestionario tiene tiempo límite, empieza a contar al pulsar <strong>Buscar</strong> y se muestra arriba a la derecha.</li>
           <li>Al terminar el tiempo se envía automáticamente lo que hayas respondido.</li>
           <li>Si recargas o cierras la página en curso, también se envía lo respondido.</li>
+          <li>No puedes volver a páginas anteriores ni avanzar sin responder todas las preguntas de la página.</li>
           <li>Solo se permite un intento; no podrás volver a ingresar.</li>
         </ul>
       </div>
@@ -194,7 +195,6 @@
 
     <div class="pie">
       <div class="nav">
-        <button type="button" id="btnAnterior" class="btn-s">← Anterior</button>
         <div class="progreso">
           <span id="txtPagina"></span>
           <div class="barra"><i id="barraProg"></i></div>
@@ -206,7 +206,7 @@
     </div>
   </form>
 </main>
-<footer>© NTT DATA · Uso interno</footer>
+<footer>© NTT DATA · Uso interno · <span id="version">Versión 3.0 · 23/11/2026 23:31</span></footer>
 
 <script>
 // ===== CONFIGURACIÓN (único bloque que debes editar) =====
@@ -217,6 +217,7 @@ var URL_CONSULTA = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.po
 var NOMBRE_CUESTIONARIO = "Cuestionario IA Engineering Chapter";
 </script>
 <script>
+console.info("Cuestionario versión 3.0 · 23/11/2026 23:31");
 const CONFIG_OK = typeof URL_FLUJO === "string" && typeof URL_CONSULTA === "string" &&
   typeof NOMBRE_CUESTIONARIO === "string" &&
   URL_FLUJO.indexOf("PEGA_AQUI") !== 0 && URL_CONSULTA.indexOf("PEGA_AQUI") !== 0;
@@ -411,13 +412,13 @@ const PREGUNTAS = [
     ]
   }
 ];
-const POR_PAGINA = 5;
+const POR_PAGINA = 2;
+const IZQ = Math.ceil(POR_PAGINA / 2); // preguntas de cada página que van en la columna izquierda
 const TOTAL = PREGUNTAS.length;
 const PAGINAS = Math.ceil(TOTAL / POR_PAGINA);
 let paginaActual = 0;
 const contIzq = document.getElementById("contIzq");
 const contDer = document.getElementById("contDer");
-const btnAnterior = document.getElementById("btnAnterior");
 const btnSiguiente = document.getElementById("btnSiguiente");
 const txtPagina = document.getElementById("txtPagina");
 const barraProg = document.getElementById("barraProg");
@@ -454,7 +455,7 @@ function renderPreguntas() {
       fs.appendChild(lb);
     });
     card.appendChild(fs);
-    ((i % POR_PAGINA) < 3 ? contIzq : contDer).appendChild(card);
+    ((i % POR_PAGINA) < IZQ ? contIzq : contDer).appendChild(card);
   });
 }
 
@@ -492,7 +493,6 @@ function mostrarPagina(n) {
   const ini = paginaActual * POR_PAGINA + 1;
   const fin = Math.min(ini + POR_PAGINA - 1, TOTAL);
   const ultima = paginaActual === PAGINAS - 1;
-  btnAnterior.disabled = paginaActual === 0;
   btnSiguiente.hidden = ultima;
   btnEnviar.hidden = !ultima;
   actualizarProgreso();
@@ -657,7 +657,6 @@ async function enviar(auto) {
   const { datos, faltan, sinResponder } = armarDatos();
   if (faltan && !auto) {
     mostrarResultado("Faltan respuestas", ["Sin responder: " + sinResponder.join(", ") + "."]);
-    mostrarPagina(Math.floor((sinResponder[0] - 1) / POR_PAGINA));
     return;
   }
 
@@ -721,7 +720,6 @@ form.addEventListener("submit", (e) => {
   enviar(false);
 });
 
-btnAnterior.addEventListener("click", () => { mostrarPagina(paginaActual - 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
 btnSiguiente.addEventListener("click", () => { if (pendientesPagina().length > 0) return; mostrarPagina(paginaActual + 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
 form.addEventListener("change", actualizarProgreso);
 
@@ -730,6 +728,7 @@ renderPreguntas();
 document.getElementById("infoTotal").textContent = String(TOTAL);
 document.getElementById("infoPaginas").textContent = String(PAGINAS);
 document.getElementById("infoPorPagina").textContent = String(POR_PAGINA);
+document.getElementById("infoPorPagina2").textContent = String(POR_PAGINA);
 mostrarPagina(0);
 reiniciarPanel();
 if (!CONFIG_OK) {
