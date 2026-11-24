@@ -89,6 +89,7 @@
   #btnBuscar{padding:10px 18px}
   button:disabled{background:#e6ebf0;color:#9aa6b2;border-color:#e6ebf0;cursor:not-allowed}
   .nav button[hidden]{display:none}
+  .pendiente{display:block;margin-top:6px;min-height:1.2em;color:var(--orange);font-weight:bold;font-size:12px}
 
   /* Estado inicial: solo búsqueda */
   .inicio .aviso{display:block}
@@ -197,6 +198,7 @@
         <div class="progreso">
           <span id="txtPagina"></span>
           <div class="barra"><i id="barraProg"></i></div>
+          <small id="txtPendiente" class="pendiente"></small>
         </div>
         <button type="button" id="btnSiguiente" class="btn-p">Siguiente →</button>
         <button type="submit" id="btnEnviar" class="btn-p" disabled hidden>Enviar</button>
@@ -209,7 +211,8 @@
 <script>
 // Debe coincidir EXACTAMENTE con "Nombre del cuestionario" en la tabla de claves.
 const NOMBRE_CUESTIONARIO = "Cuestionario IA Engineering Chapter";
-const URL_FLUJO = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/956767c067a84d48b001999c783a5183/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2WsyKRgrQkEE5VBiQA3dRe7DJ1V3XnD6Cy0jH1sIlbc";
+const URL_FLUJO = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/956767c067a84d48b001999c783a5183/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2WsyKRgrQkEE5VBiQA3dRe7DJ1V3XnD6Cy0jH1sIlbc
+";
 const URL_CONSULTA = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/98ca81215df64be2ac51dd07ed6ec2e6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=hsg5FsqTQmfkXOTDU1MtZ6T7BO2QIiY5ktCr7oRAfHw";
 
 const form = document.getElementById("cuestionario");
@@ -413,6 +416,7 @@ const btnAnterior = document.getElementById("btnAnterior");
 const btnSiguiente = document.getElementById("btnSiguiente");
 const txtPagina = document.getElementById("txtPagina");
 const barraProg = document.getElementById("barraProg");
+const txtPendiente = document.getElementById("txtPendiente");
 
 function renderPreguntas() {
   PREGUNTAS.forEach((p, i) => {
@@ -453,10 +457,26 @@ function contarRespondidas() {
   return form.querySelectorAll('input[type="radio"]:checked').length;
 }
 
+function pendientesPagina() {
+  const ini = paginaActual * POR_PAGINA + 1;
+  const fin = Math.min(ini + POR_PAGINA - 1, TOTAL);
+  const pend = [];
+  for (let i = ini; i <= fin; i++) {
+    if (!form.querySelector(`input[name="q${i}"]:checked`)) pend.push(i);
+  }
+  return pend;
+}
+
 function actualizarProgreso() {
   const resp = contarRespondidas();
   txtPagina.textContent = "Página " + (paginaActual + 1) + " de " + PAGINAS + " · " + resp + "/" + TOTAL + " respondidas";
   barraProg.style.width = (resp / TOTAL * 100) + "%";
+  const pend = pendientesPagina();
+  const ultimaPag = paginaActual === PAGINAS - 1;
+  btnSiguiente.disabled = pend.length > 0;
+  txtPendiente.textContent = pend.length > 0
+    ? (ultimaPag ? "Faltan por responder: " : "Responde todas las preguntas de esta página para continuar. Faltan: ") + pend.join(", ")
+    : "";
 }
 
 function mostrarPagina(n) {
@@ -544,6 +564,7 @@ function reiniciarPanel() {
 function borrarBusqueda() {
   detenerTemporizador();
   completado = false;
+  enviadoAlSalir = false;
   form.querySelectorAll('input[type="radio"]').forEach((r) => { r.disabled = false; });
   form.classList.add("inicio");
   mostrarPagina(0);
@@ -670,9 +691,11 @@ async function enviar(auto) {
   }
 }
 
-// Si recargan (F5) o cierran la página con el cuestionario en curso, se envía lo respondido.
-window.addEventListener("pagehide", () => {
-  if (form.classList.contains("inicio") || completado || enviando) return;
+// Si recargan (F5) o cierran la pestaña/ventana con el cuestionario en curso, se envía lo respondido.
+let enviadoAlSalir = false;
+function enviarAlSalir() {
+  if (form.classList.contains("inicio") || completado || enviando || enviadoAlSalir) return;
+  enviadoAlSalir = true;
   const { datos } = armarDatos();
   try {
     fetch(URL_FLUJO, {
@@ -682,15 +705,14 @@ window.addEventListener("pagehide", () => {
       keepalive: true
     });
   } catch (err) { /* sin acción */ }
-});
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  enviar(false);
-});
+}
+window.addEventListener("pagehide", enviarAlSalir);
+window.addEventListener("unload", enviarAlSalir);
+// Si el navegador restaura la página desde caché tras haber enviado, se recarga para no dejarla en un estado falso.
+window.addEventListener("pageshow", (e) => { if (e.persisted && enviadoAlSalir) location.reload(); });
 
 btnAnterior.addEventListener("click", () => { mostrarPagina(paginaActual - 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
-btnSiguiente.addEventListener("click", () => { mostrarPagina(paginaActual + 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
+btnSiguiente.addEventListener("click", () => { if (pendientesPagina().length > 0) return; mostrarPagina(paginaActual + 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
 form.addEventListener("change", actualizarProgreso);
 
 form.cuestionario.value = NOMBRE_CUESTIONARIO;
