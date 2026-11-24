@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cuestionario | NTT DATA</title>
+<title>Cuestionario IA Engineering Chapter | NTT DATA</title>
 <style>
   :root{
     --navy:#070F26; --slate:#2E404D; --blue:#0072BC; --sky:#19A3FC; --cyan:#00DFED;
@@ -102,26 +102,41 @@
   .inicio .pagina.izq{background:#fff;padding-bottom:52px}
   form:not(.inicio) .libro{animation:aparecer .35s ease}
   @keyframes aparecer{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .cont{display:contents}
+  .card.q{display:none}
+  .card.q.visible{display:block}
+  .inicio .card.q.visible{display:none}
+  .inicio .pagina.izq::after{content:"— Inicio —"}
+  label.opcion{align-items:flex-start}
+  input[type=radio]{flex:none;margin-top:2px}
+  .pie .nav{display:flex;align-items:center;gap:20px;width:100%;max-width:820px;margin:0 auto}
+  .pie{justify-content:center}
+  .progreso{flex:1;text-align:center;font-size:13px;color:var(--slate)}
+  .barra{height:6px;background:var(--line);border-radius:999px;margin-top:8px;overflow:hidden}
+  .barra i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+  .nav button[hidden]{display:none}
+  @media(max-width:860px){.pie .nav{flex-wrap:wrap}.progreso{order:-1;flex-basis:100%}}
 </style>
 </head>
 <body>
 <header class="topbar"><div class="in">
   <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1010 12890 18980 3920" role="img" aria-label="NTT DATA"> <g> <g id="id2" class="Master_Slide"> <g id="bg-id2" class="Background"/> <g id="bo-id2" class="BackgroundObjects"/> </g> </g> <g class="SlideGroup"> <g> <g id="container-id1"> <g id="id1" class="Slide" clip-path="url(#presentation_clip_path)"> <g class="Page"> <g class="Graphic"> <g id="id3">  <path fill="currentColor" stroke="none" d="M 2587,12923 L 2511,12924 2362,12942 2215,12976 2073,13028 2004,13059 1936,13093 1804,13175 1681,13270 1565,13378 1510,13439 1459,13500 1361,13633 1276,13778 1202,13932 1170,14014 1140,14097 1094,14271 1062,14453 1044,14645 1043,14742 1045,14850 1066,15058 1108,15259 1169,15451 1207,15543 1248,15635 1344,15808 1455,15970 1581,16121 1650,16189 1720,16258 1872,16379 2035,16488 2207,16580 2299,16620 2390,16657 2580,16715 2776,16754 2977,16775 3081,16777 3183,16775 3385,16754 3581,16715 3771,16657 3863,16620 3952,16580 4125,16488 4288,16379 4441,16258 4511,16189 4580,16121 4706,15970 4817,15808 4913,15635 4954,15543 4992,15451 5052,15259 5094,15058 5115,14850 5116,14742 5115,14645 5100,14453 5066,14271 5019,14097 4989,14014 4959,13932 4885,13778 4798,13633 4702,13500 4649,13439 4595,13378 4480,13270 4355,13175 4225,13093 4157,13059 4088,13028 3946,12976 3800,12942 3649,12924 3574,12923 3504,12924 3364,12939 3297,12951 3234,12964 3124,12997 3081,13016 3036,12997 2925,12965 2861,12952 2796,12939 2656,12924 2587,12923 Z M 2522,13420 L 2543,13419 2565,13420 2525,13461 2454,13548 2391,13643 2337,13745 2313,13798 2292,13851 2259,13959 2236,14071 2224,14183 2224,14239 2224,14287 2233,14379 2250,14468 2278,14552 2311,14632 2352,14706 2400,14777 2454,14840 2482,14869 2513,14897 2577,14949 2647,14995 2719,15033 2795,15065 2873,15088 2955,15105 3039,15113 3081,15115 3123,15113 3205,15105 3286,15088 3366,15065 3442,15033 3515,14995 3583,14949 3648,14897 3677,14869 3707,14840 3760,14777 3808,14706 3849,14632 3884,14552 3909,14468 3928,14379 3937,14287 3938,14239 3938,14187 3928,14080 3907,13971 3875,13863 3854,13810 3832,13757 3777,13653 3713,13555 3638,13462 3596,13420 3639,13419 3728,13429 3818,13452 3907,13486 3995,13532 4082,13589 4164,13657 4244,13735 4280,13778 4318,13822 4385,13918 4446,14023 4499,14137 4522,14196 4544,14257 4579,14384 4603,14519 4616,14660 4616,14732 4615,14813 4598,14971 4568,15123 4523,15268 4495,15339 4464,15408 4393,15540 4309,15662 4215,15776 4163,15829 4110,15880 3997,15974 3874,16057 3743,16126 3675,16156 3606,16184 3462,16228 3313,16259 3158,16273 3081,16276 3001,16273 2848,16259 2698,16228 2555,16184 2486,16156 2417,16126 2286,16057 2164,15974 2049,15880 1996,15829 1946,15776 1851,15662 1769,15540 1697,15408 1666,15339 1637,15268 1592,15123 1561,14971 1545,14813 1544,14732 1545,14658 1558,14516 1583,14381 1618,14251 1640,14191 1664,14130 1718,14017 1781,13912 1848,13816 1886,13771 1921,13732 1995,13658 2073,13595 2153,13540 2235,13495 2317,13460 2400,13436 2482,13421 2522,13420 Z M 3081,13548 L 3104,13562 3163,13610 3229,13678 3293,13758 3320,13802 3346,13847 3391,13943 3423,14048 3441,14158 3443,14214 3442,14255 3428,14334 3402,14405 3366,14468 3342,14497 3317,14523 3261,14566 3194,14595 3120,14611 3081,14612 3040,14611 2966,14595 2901,14566 2842,14523 2818,14497 2796,14468 2757,14405 2733,14334 2719,14255 2718,14214 2719,14158 2737,14048 2770,13943 2814,13847 2840,13802 2867,13759 2927,13682 2989,13616 3051,13566 3081,13548 Z M 6346,13777 L 6311,13777 6240,13786 6170,13809 6105,13845 6046,13904 5999,13982 5962,14088 5944,14223 5941,14303 5941,15797 6389,15797 6389,14551 6387,14396 6383,14303 6382,14286 6387,14260 6394,14254 6399,14251 6408,14252 6422,14262 6429,14275 6504,14424 6852,15099 7060,15492 7120,15592 7152,15641 7207,15704 7249,15741 7294,15771 7346,15794 7406,15810 7472,15818 7509,15819 7544,15818 7615,15810 7684,15787 7751,15750 7809,15692 7857,15613 7893,15508 7911,15373 7914,15292 7914,13798 7466,13798 7466,15044 7469,15200 7472,15293 7472,15309 7469,15335 7461,15342 7456,15344 7446,15344 7434,15332 7427,15320 7345,15161 6983,14463 6780,14081 6736,14005 6704,13955 6648,13891 6606,13855 6561,13824 6509,13801 6450,13785 6383,13777 6346,13777 Z M 8066,13799 L 8066,14219 8708,14219 8708,15797 9163,15797 9163,14219 9804,14219 9804,13799 8066,13799 Z M 9948,13799 L 9948,14219 10589,14219 10589,15797 11044,15797 11044,14219 11685,14219 11685,13799 9948,13799 Z M 12236,13799 L 12236,15796 13475,15796 13519,15796 13603,15790 13678,15779 13747,15763 13810,15740 13865,15712 13913,15679 13956,15639 13994,15596 14026,15546 14051,15492 14074,15432 14097,15332 14112,15181 14113,15097 14113,14499 14112,14403 14099,14277 14083,14203 14065,14135 14039,14075 14009,14021 13975,13974 13934,13932 13889,13897 13837,13868 13780,13844 13717,13826 13649,13812 13536,13800 13452,13799 12236,13799 Z M 14397,13799 L 14397,14223 15510,14223 15540,14223 15592,14230 15636,14245 15671,14269 15698,14301 15718,14341 15731,14392 15738,14453 15738,14488 15738,14558 14815,14558 14751,14561 14636,14577 14561,14601 14515,14622 14474,14648 14438,14679 14404,14714 14376,14755 14340,14822 14308,14929 14291,15058 14290,15130 14290,15225 14291,15299 14308,15430 14333,15512 14354,15562 14379,15606 14409,15646 14442,15680 14481,15710 14546,15747 14649,15779 14768,15795 14834,15796 16186,15796 16186,14483 16185,14391 16169,14232 16144,14132 16122,14072 16095,14019 16062,13972 16025,13932 15980,13897 15931,13868 15874,13844 15813,13826 15743,13812 15628,13800 15540,13799 14397,13799 Z M 16278,13799 L 16278,14219 16919,14219 16919,15797 17374,15797 17374,14219 18015,14219 18015,13799 16278,13799 Z M 18167,13799 L 18167,14223 19281,14223 19310,14223 19362,14230 19406,14245 19441,14269 19468,14301 19488,14341 19500,14392 19506,14453 19507,14488 19507,14516 19507,14558 18585,14558 18521,14561 18406,14577 18331,14601 18285,14622 18245,14648 18208,14679 18174,14714 18146,14755 18110,14822 18078,14929 18061,15058 18060,15130 18060,15225 18061,15299 18078,15430 18103,15512 18124,15562 18150,15606 18179,15646 18213,15680 18251,15710 18316,15747 18418,15779 18537,15795 18605,15796 19956,15796 19956,14483 19955,14391 19939,14232 19915,14132 19892,14072 19865,14019 19832,13972 19795,13932 19750,13897 19701,13868 19644,13844 19583,13826 19514,13812 19398,13800 19310,13799 18167,13799 Z M 12691,14224 L 13423,14224 13452,14224 13504,14232 13547,14246 13583,14270 13610,14302 13630,14343 13643,14394 13649,14455 13649,14491 13649,15106 13649,15140 13643,15202 13630,15253 13610,15293 13583,15326 13547,15349 13504,15363 13452,15371 13423,15371 12691,15371 12691,14224 Z M 14882,14961 L 15738,14961 15738,15370 14882,15370 14855,15369 14818,15356 14794,15341 14773,15319 14756,15287 14744,15246 14736,15194 14736,15164 14736,15132 14744,15081 14756,15041 14772,15010 14793,14989 14816,14974 14855,14963 14882,14961 Z M 18652,14961 L 19507,14961 19507,15370 18652,15370 18626,15369 18587,15356 18564,15341 18543,15319 18526,15287 18513,15246 18506,15194 18506,15164 18506,15132 18513,15081 18526,15041 18542,15010 18563,14989 18586,14974 18626,14963 18652,14961 Z"/> </g> </g> </g> </g> </g> </g> </g> </svg></div>
-  <div class="tag">AI Academy · Capacitaciones</div>
+  <div class="tag">Capacitaciones · IA Engineering Chapter</div>
 </div></header>
 
 <div id="reloj" class="reloj" role="timer" aria-live="off"><span class="t">Tiempo restante</span><span class="v" id="relojValor">--:--</span></div>
 <main>
 
   <form id="cuestionario" class="inicio">
-    <input type="hidden" name="cuestionario" value="Cuestionario Java y Spring">
+    <input type="hidden" name="cuestionario" value="Cuestionario IA Engineering Chapter">
     <div class="cabecera">
-      <div class="titulo"><h1>Cuestionario de <span>Java y Spring</span></h1>
+      <div class="titulo"><h1>Cuestionario <span>IA Engineering Chapter</span></h1>
       <p class="sub">Ingresa tu código de empleado, valida tus datos y responde las preguntas.</p></div>
       <aside id="resultado" class="panel-resultado"></aside>
     </div>
     <div class="libro">
-      <section class="pagina izq" data-pag="1">
+      <section class="pagina izq" data-pag="Inicio">
         <div class="card">
         <span class="label">Datos del candidato</span>
         <div class="fila">
@@ -135,43 +150,21 @@
         </div>
         <p class="aviso">Al buscar se mostrarán las preguntas y, si el cuestionario tiene tiempo límite, comenzará a correr.</p>
       </div>
-        <div class="card q"><fieldset>
-        <legend><span class="n">1</span>¿Qué anotación marca una clase como servicio en Spring?</legend>
-        <label class="opcion"><input type="radio" name="q1" value="a"> @Service</label>
-        <label class="opcion"><input type="radio" name="q1" value="b"> @Entity</label>
-        <label class="opcion"><input type="radio" name="q1" value="c"> @Table</label>
-      </fieldset></div>
-        <div class="card q"><fieldset>
-        <legend><span class="n">2</span>¿Qué método HTTP se usa normalmente para crear un recurso?</legend>
-        <label class="opcion"><input type="radio" name="q2" value="a"> GET</label>
-        <label class="opcion"><input type="radio" name="q2" value="b"> DELETE</label>
-        <label class="opcion"><input type="radio" name="q2" value="c"> POST</label>
-      </fieldset></div>
+        <div id="contIzq" class="cont"></div>
       </section>
-      <section class="pagina der" data-pag="2">
-        <div class="card q"><fieldset>
-        <legend><span class="n">3</span>¿Qué palabra clave impide que una variable cambie su valor en Java?</legend>
-        <label class="opcion"><input type="radio" name="q3" value="a"> static</label>
-        <label class="opcion"><input type="radio" name="q3" value="b"> final</label>
-        <label class="opcion"><input type="radio" name="q3" value="c"> void</label>
-      </fieldset></div>
-        <div class="card q"><fieldset>
-        <legend><span class="n">4</span>¿Qué código de estado HTTP indica que un recurso fue creado?</legend>
-        <label class="opcion"><input type="radio" name="q4" value="a"> 200</label>
-        <label class="opcion"><input type="radio" name="q4" value="b"> 201</label>
-        <label class="opcion"><input type="radio" name="q4" value="c"> 404</label>
-      </fieldset></div>
-        <div class="card q"><fieldset>
-        <legend><span class="n">5</span>¿Qué anotación de JPA define la clave primaria?</legend>
-        <label class="opcion"><input type="radio" name="q5" value="a"> @Column</label>
-        <label class="opcion"><input type="radio" name="q5" value="b"> @Id</label>
-        <label class="opcion"><input type="radio" name="q5" value="c"> @Transient</label>
-      </fieldset></div>
+      <section class="pagina der" data-pag="">
+        <div id="contDer" class="cont"></div>
       </section>
     </div>
     <div class="pie">
-      <div class="acciones">
-        <button type="submit" id="btnEnviar" class="btn-p" disabled>Enviar</button>
+      <div class="nav">
+        <button type="button" id="btnAnterior" class="btn-s">← Anterior</button>
+        <div class="progreso">
+          <span id="txtPagina"></span>
+          <div class="barra"><i id="barraProg"></i></div>
+        </div>
+        <button type="button" id="btnSiguiente" class="btn-p">Siguiente →</button>
+        <button type="submit" id="btnEnviar" class="btn-p" disabled hidden>Enviar</button>
       </div>
     </div>
   </form>
@@ -190,6 +183,257 @@ const campoChapter = form.chapter;
 const btnBuscar = document.getElementById("btnBuscar");
 const btnEnviar = document.getElementById("btnEnviar");
 const panel = document.getElementById("resultado");
+
+const PREGUNTAS = [
+  {
+    "t": "De acuerdo con el framework de prompting del Día 1, ¿qué conjunto corresponde a los cinco elementos de un prompt?",
+    "o": [
+      "Rol, ejemplos, cadena de pensamiento, restricciones y formato.",
+      "Contexto, objetivo, restricciones, criterios y formato de salida.",
+      "Contexto, tarea, herramientas, presupuesto y audiencia.",
+      "Objetivo, alcance, riesgos, pruebas y entregables."
+    ]
+  },
+  {
+    "t": "Un prompt no entrega lo esperado y el equipo empieza a retocar el formato de salida y a añadir ejemplos. Según el material, ¿qué bloque conviene revisar primero?",
+    "o": [
+      "El formato de salida, porque es lo que más malentendidos evita.",
+      "Los ejemplos few-shot, porque enseñan el patrón input → output.",
+      "El contexto, porque define el resto y sin él los objetivos se vuelven vagos.",
+      "El rol, porque cambia el tono, el rigor y los silencios de la IA."
+    ]
+  },
+  {
+    "t": "¿Qué describe mejor el papel de REGLAS.md en el trabajo seguro con IA?",
+    "o": [
+      "Reúne reglas de seguridad y contratos que se mencionan al construir y sirven para auditar después; el humano sigue firmando antes del merge.",
+      "Reemplaza la revisión humana cuando la IA audita el código contra las reglas y no encuentra vulnerabilidades.",
+      "Guarda los prompts que funcionaron bien para reutilizarlos y evitar que la IA repita los mismos errores.",
+      "Se completa al cierre del sprint para declarar que el código generado cumple las políticas de seguridad."
+    ]
+  },
+  {
+    "t": "Un equipo pide a la IA que «mejore» un servicio y confunde dos tipos de cambio. ¿Cuál es la diferencia correcta entre refactor y optimización?",
+    "o": [
+      "El refactor reduce latencia y consumo de memoria; la optimización cambia la forma del código sin alterar el comportamiento.",
+      "El refactor exige medir una métrica antes y después; la optimización se valida con los tests existentes.",
+      "El refactor puede cambiar el comportamiento si mejora la legibilidad; la optimización conserva siempre los mismos inputs y outputs.",
+      "El refactor cambia la forma sin alterar el comportamiento y se valida con tests; la optimización mejora una métrica concreta y exige medición antes y después."
+    ]
+  },
+  {
+    "t": "Un endpoint generado por IA valida el body, aplica hashing y usa consultas parametrizadas, pero registra en el log el body completo con email y número de tarjeta. ¿Cuál es la acción más alineada con el Día 1?",
+    "o": [
+      "Añadir la regla al archivo REGLAS.md, sanear u omitir los datos sensibles en los logs y volver a auditar el código.",
+      "Cambiar a un modelo más capaz para que deje de incluir datos sensibles en los mensajes de log.",
+      "Documentar en el README que el log es solo para depuración y que no se comparte con terceros.",
+      "Aceptar el comportamiento porque los datos permanecen dentro del perímetro de la entidad financiera."
+    ]
+  },
+  {
+    "t": "¿Qué es un Agent Skill según el Día 2?",
+    "o": [
+      "Una instrucción aislada que se escribe en el chat y desaparece al cerrar la conversación.",
+      "Una unidad de conocimiento y comportamiento reutilizable que declara cuándo se usa, qué necesita, qué entrega y cómo se valida.",
+      "Un modelo adicional entrenado con los documentos del equipo para responder preguntas del dominio.",
+      "Una especificación completa del producto que sustituye permisos, pruebas y revisión humana."
+    ]
+  },
+  {
+    "t": "Un Skill publicado recibe un nuevo parámetro opcional en su salida, sin romper el contrato existente. ¿Qué versión corresponde según SemVer?",
+    "o": [
+      "MAJOR: v2.0.0, porque toda modificación de la salida es incompatible.",
+      "PATCH: v1.0.1, porque el cambio no altera el propósito del Skill.",
+      "MINOR: v1.1.0, porque es un cambio aditivo y compatible.",
+      "ARCHIVED: se retira la versión anterior y se publica sin número nuevo."
+    ]
+  },
+  {
+    "t": "¿Cómo se relacionan un Template SDLC y un Agent Skill?",
+    "o": [
+      "Son sustitutos: si existe un Template, el Skill deja de ser necesario en esa fase.",
+      "El Skill define la fase del ciclo y el Template aporta la lógica reutilizable del catálogo.",
+      "El Template reemplaza al Skill cuando el cambio toca producción y requiere auditoría.",
+      "El Template es un Skill especializado por fase que selecciona Skills vigentes del catálogo y comparte un identificador de trazabilidad."
+    ]
+  },
+  {
+    "t": "Una tool de pagos se invoca dos veces con los mismos argumentos debido a un reintento. ¿Qué propiedad del diseño evita que la operación se duplique?",
+    "o": [
+      "Un timeout más largo por herramienta.",
+      "La idempotencia de la llamada.",
+      "Un backoff exponencial con más intentos.",
+      "Una condición de parada por número de pasos."
+    ]
+  },
+  {
+    "t": "Tres Skills y dos equipos necesitan consultar los mismos datos de saldos, con permisos separados y auditoría central. ¿Qué decisión recomienda el material?",
+    "o": [
+      "Exponer la capacidad mediante un servidor MCP, con mínimo privilegio y auditoría.",
+      "Duplicar la integración directa en cada Skill para no depender de un servidor común.",
+      "Resolverlo con un prompt libre más detallado que describa el formato de salida.",
+      "Crear un Template adicional por equipo y dejar los permisos en el código de cada Skill."
+    ]
+  },
+  {
+    "t": "¿Qué caracteriza a Spec-Driven Development (SDD)?",
+    "o": [
+      "Escribir prompts más extensos para que el modelo requiera menos revisiones.",
+      "Generar código primero y documentar la intención cuando el cambio ya está en producción.",
+      "Definir el cambio en specs versionadas junto al código, con criterios verificables y evidencia de cumplimiento.",
+      "Reemplazar la spec por una historia de usuario que se reescribe en cada sprint."
+    ]
+  },
+  {
+    "t": "En el pipeline Specify → Plan → Tasks → Validate, ¿qué pregunta responde cada etapa, en orden?",
+    "o": [
+      "¿Cómo?, ¿qué?, ¿evidencia?, ¿pasos?",
+      "¿Qué?, ¿pasos?, ¿cómo?, ¿evidencia?",
+      "¿Evidencia?, ¿qué?, ¿cómo?, ¿pasos?",
+      "¿Qué?, ¿cómo?, ¿pasos?, ¿evidencia?"
+    ]
+  },
+  {
+    "t": "¿Cuál es el rol de la Constitution frente a OpenSpec y Spec Kit?",
+    "o": [
+      "La Constitution genera las tareas y OpenSpec y Spec Kit definen las reglas de seguridad.",
+      "La Constitution define qué está permitido; OpenSpec y Spec Kit organizan cómo se pide y se ejecuta el cambio.",
+      "La Constitution es el repositorio de prompts y OpenSpec y Spec Kit son los agentes que los ejecutan.",
+      "La Constitution reemplaza a OpenSpec cuando el cambio toca contratos de autenticación."
+    ]
+  },
+  {
+    "t": "Un agente responde, ejecuta tools y consume pasos sin cerrar la tarea. Según la anatomía del Día 3, ¿qué componente falla con mayor probabilidad?",
+    "o": [
+      "El modelo, porque no interpreta el contexto de la tarea.",
+      "Las tools, porque devuelven resultados ruidosos.",
+      "El contexto, porque está saturado de información.",
+      "El loop, porque no tiene criterio de éxito ni condición de salida."
+    ]
+  },
+  {
+    "t": "En un flujo con routing, agente y evaluator, ¿dónde debe colocarse el HITL según el material?",
+    "o": [
+      "En puntos concretos donde el costo del error es alto o la acción es irreversible, no en todas las solicitudes.",
+      "En cada solicitud del flujo, para garantizar que ninguna salida llegue al usuario sin revisión.",
+      "Solo al cierre del proyecto, cuando el equipo revisa los resultados acumulados del agente.",
+      "Después del merge, para que el humano valide el cambio cuando ya está en producción."
+    ]
+  },
+  {
+    "t": "¿Cuál es la diferencia central entre CrewAI y LangGraph según el Día 4?",
+    "o": [
+      "CrewAI modela el flujo como un grafo con estado y LangGraph reparte tareas entre roles.",
+      "CrewAI solo funciona con un agente y LangGraph es obligatorio para usar herramientas.",
+      "CrewAI orquesta un equipo donde un agente decide a quién despertar; LangGraph dibuja el recorrido con nodos, aristas y estado.",
+      "CrewAI persiste el estado con checkpoints y LangGraph se limita a generar respuestas de texto."
+    ]
+  },
+  {
+    "t": "Un caso bancario requiere que un manager reciba la consulta, la descomponga y asigne subtareas según lo que va apareciendo. ¿Qué proceso de crew corresponde?",
+    "o": [
+      "Sequential, porque cada tarea termina antes de que empiece la siguiente.",
+      "Hierarchical, porque un manager decide qué subtarea va primero y revisa el resultado.",
+      "Consensus, porque varios agentes proponen en paralelo y un agregador decide.",
+      "Delegation, porque el manager delega todas las tareas sin revisar el resultado."
+    ]
+  },
+  {
+    "t": "¿Para qué sirve un checkpoint en LangGraph?",
+    "o": [
+      "Para compilar el grafo antes de ejecutarlo y detectar nodos sin conexión.",
+      "Para definir el rol, objetivo y backstory de cada agente del equipo.",
+      "Para sustituir las tools externas por respuestas almacenadas en memoria.",
+      "Para guardar el estado en cada paso y permitir reanudar, auditar y pausar por aprobación humana."
+    ]
+  },
+  {
+    "t": "¿Cuáles son las cuatro métricas mínimas que el harness debe exponer según el Día 4?",
+    "o": [
+      "Cobertura de código, deuda técnica, throughput y disponibilidad.",
+      "Precisión del modelo, tamaño del contexto, número de tools y temperatura.",
+      "Evaluación, observabilidad, coste y latencia.",
+      "Número de agentes, pasos por turno, reintentos y tokens por prompt."
+    ]
+  },
+  {
+    "t": "Un guardrail recibe una solicitud en zona gris y de alto impacto. ¿Qué decisión corresponde y por qué?",
+    "o": [
+      "ESCALAR: decide una persona, el checkpointer pausa el grafo y el flujo se reanuda con su decisión.",
+      "PASS: la solicitud continúa y se registra en la traza sin intervención humana.",
+      "BLOQUEAR: se detiene con un mensaje seguro porque toda zona gris es una violación clara.",
+      "Reintentar: se vuelve a evaluar con el mismo criterio hasta obtener una respuesta concluyente."
+    ]
+  }
+];
+const POR_PAGINA = 5;
+const TOTAL = PREGUNTAS.length;
+const PAGINAS = Math.ceil(TOTAL / POR_PAGINA);
+let paginaActual = 0;
+const contIzq = document.getElementById("contIzq");
+const contDer = document.getElementById("contDer");
+const btnAnterior = document.getElementById("btnAnterior");
+const btnSiguiente = document.getElementById("btnSiguiente");
+const txtPagina = document.getElementById("txtPagina");
+const barraProg = document.getElementById("barraProg");
+const paginaIzq = document.querySelector(".pagina.izq");
+const paginaDer = document.querySelector(".pagina.der");
+
+function renderPreguntas() {
+  PREGUNTAS.forEach((p, i) => {
+    const card = document.createElement("div");
+    card.className = "card q";
+    card.dataset.bloque = String(Math.floor(i / POR_PAGINA));
+    const fs = document.createElement("fieldset");
+    const lg = document.createElement("legend");
+    const n = document.createElement("span");
+    n.className = "n";
+    n.textContent = String(i + 1);
+    lg.appendChild(n);
+    lg.appendChild(document.createTextNode(p.t));
+    fs.appendChild(lg);
+    p.o.forEach((texto, k) => {
+      const lb = document.createElement("label");
+      lb.className = "opcion";
+      const rd = document.createElement("input");
+      rd.type = "radio";
+      rd.name = "q" + (i + 1);
+      rd.value = "abcd"[k];
+      lb.appendChild(rd);
+      lb.appendChild(document.createTextNode(" " + texto));
+      fs.appendChild(lb);
+    });
+    card.appendChild(fs);
+    ((i % POR_PAGINA) < 2 ? contIzq : contDer).appendChild(card);
+  });
+}
+
+function contarRespondidas() {
+  return form.querySelectorAll('input[type="radio"]:checked').length;
+}
+
+function actualizarProgreso() {
+  const resp = contarRespondidas();
+  txtPagina.textContent = "Página " + (paginaActual + 1) + " de " + PAGINAS + " · " + resp + "/" + TOTAL + " respondidas";
+  barraProg.style.width = (resp / TOTAL * 100) + "%";
+}
+
+function mostrarPagina(n) {
+  paginaActual = Math.max(0, Math.min(PAGINAS - 1, n));
+  document.querySelectorAll(".card.q").forEach((c) => {
+    c.classList.toggle("visible", Number(c.dataset.bloque) === paginaActual);
+  });
+  const ini = paginaActual * POR_PAGINA + 1;
+  const fin = Math.min(ini + POR_PAGINA - 1, TOTAL);
+  paginaIzq.dataset.pag = "Preguntas " + ini + (Math.min(ini + 1, fin) > ini ? " – " + Math.min(ini + 1, fin) : "");
+  paginaDer.dataset.pag = fin >= ini + 2 ? "Preguntas " + (ini + 2) + (fin > ini + 2 ? " – " + fin : "") : "";
+  const ultima = paginaActual === PAGINAS - 1;
+  btnAnterior.disabled = paginaActual === 0;
+  btnSiguiente.hidden = ultima;
+  btnEnviar.hidden = !ultima;
+  actualizarProgreso();
+}
+
 
 
 let timerId = null;
@@ -263,6 +507,7 @@ function borrarBusqueda() {
   completado = false;
   form.querySelectorAll('input[type="radio"]').forEach((r) => { r.disabled = false; });
   form.classList.add("inicio");
+  mostrarPagina(0);
   campoNombre.value = "";
   campoIntento.value = "";
   campoChapter.value = "";
@@ -299,6 +544,7 @@ async function buscarEmpleado() {
     campoChapter.value = r.chapter || "";
     btnEnviar.disabled = false;
     form.classList.remove("inicio");
+    mostrarPagina(0);
     iniciarTemporizador(r.tiempo_minutos);
   } catch (err) {
     campoNombre.placeholder = "Error de conexión";
@@ -315,14 +561,15 @@ campoCodigo.addEventListener("input", () => { campoCodigo.value = campoCodigo.va
 
 function armarDatos() {
   const respuestas = {};
-  let faltan = false;
-  for (let i = 1; i <= 5; i++) {
+  const sinResponder = [];
+  for (let i = 1; i <= TOTAL; i++) {
     const sel = form.querySelector(`input[name="q${i}"]:checked`);
-    if (!sel) faltan = true;
+    if (!sel) sinResponder.push(i);
     respuestas[`q${i}`] = sel ? sel.value.toUpperCase() : "";
   }
   return {
-    faltan,
+    faltan: sinResponder.length > 0,
+    sinResponder,
     datos: {
       codigo_empleado: campoCodigo.value,
       nombre: campoNombre.value,
@@ -342,9 +589,10 @@ function volverAlInicio() {
 
 async function enviar(auto) {
   if (enviando || completado) return;
-  const { datos, faltan } = armarDatos();
+  const { datos, faltan, sinResponder } = armarDatos();
   if (faltan && !auto) {
-    mostrarResultado("Faltan respuestas", ["Responde todas las preguntas antes de enviar."]);
+    mostrarResultado("Faltan respuestas", ["Sin responder: " + sinResponder.join(", ") + "."]);
+    mostrarPagina(Math.floor((sinResponder[0] - 1) / POR_PAGINA));
     return;
   }
 
@@ -402,6 +650,12 @@ form.addEventListener("submit", (e) => {
   enviar(false);
 });
 
+btnAnterior.addEventListener("click", () => { mostrarPagina(paginaActual - 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
+btnSiguiente.addEventListener("click", () => { mostrarPagina(paginaActual + 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
+form.addEventListener("change", actualizarProgreso);
+
+renderPreguntas();
+mostrarPagina(0);
 reiniciarPanel();
 </script>
 </body>
