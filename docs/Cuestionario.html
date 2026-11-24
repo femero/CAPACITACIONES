@@ -135,7 +135,7 @@
         <h1>Cuestionario <span>IA Engineering Chapter</span></h1>
         <p class="sub">Ingresa tu código de empleado, valida tus datos y responde las preguntas.</p>
       </div>
-      <aside id="resultado" class="panel-resultado"></aside>
+      <aside id="resultado" class="panel-resultado"><p class="vacio">Aquí verás tu puntaje al enviar el cuestionario.</p></aside>
     </div>
 
     <section class="datos">
@@ -169,9 +169,9 @@
       <div class="ind">
         <h3>Sobre el cuestionario</h3>
         <dl>
-          <dt>Preguntas</dt><dd id="infoTotal">—</dd>
-          <dt>Páginas</dt><dd id="infoPaginas">—</dd>
-          <dt>Preguntas por página</dt><dd id="infoPorPagina">—</dd>
+          <dt>Preguntas</dt><dd id="infoTotal">20</dd>
+          <dt>Páginas</dt><dd id="infoPaginas">4</dd>
+          <dt>Preguntas por página</dt><dd id="infoPorPagina">5</dd>
           <dt>Tipo de respuesta</dt><dd>Opción única</dd>
           <dt>Intentos por persona</dt><dd>1</dd>
         </dl>
@@ -209,12 +209,17 @@
 <footer>© NTT DATA · Uso interno</footer>
 
 <script>
+// ===== CONFIGURACIÓN (único bloque que debes editar) =====
+// Pega cada URL ENTRE LAS COMILLAS, sin borrar las comillas ni el punto y coma.
+var URL_FLUJO = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/956767c067a84d48b001999c783a5183/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2WsyKRgrQkEE5VBiQA3dRe7DJ1V3XnD6Cy0jH1sIlbc";
+var URL_CONSULTA = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/98ca81215df64be2ac51dd07ed6ec2e6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=hsg5FsqTQmfkXOTDU1MtZ6T7BO2QIiY5ktCr7oRAfHw";
 // Debe coincidir EXACTAMENTE con "Nombre del cuestionario" en la tabla de claves.
-const NOMBRE_CUESTIONARIO = "Cuestionario IA Engineering Chapter";
-const URL_FLUJO = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/956767c067a84d48b001999c783a5183/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=2WsyKRgrQkEE5VBiQA3dRe7DJ1V3XnD6Cy0jH1sIlbc
-";
-const URL_CONSULTA = "https://c1ea623fd981e3039097b3e3289619.48.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/98ca81215df64be2ac51dd07ed6ec2e6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=hsg5FsqTQmfkXOTDU1MtZ6T7BO2QIiY5ktCr7oRAfHw";
-
+var NOMBRE_CUESTIONARIO = "Cuestionario IA Engineering Chapter";
+</script>
+<script>
+const CONFIG_OK = typeof URL_FLUJO === "string" && typeof URL_CONSULTA === "string" &&
+  typeof NOMBRE_CUESTIONARIO === "string" &&
+  URL_FLUJO.indexOf("PEGA_AQUI") !== 0 && URL_CONSULTA.indexOf("PEGA_AQUI") !== 0;
 const form = document.getElementById("cuestionario");
 const campoCodigo = form.codigo_empleado;
 const campoNombre = form.nombre;
@@ -715,13 +720,17 @@ btnAnterior.addEventListener("click", () => { mostrarPagina(paginaActual - 1); w
 btnSiguiente.addEventListener("click", () => { if (pendientesPagina().length > 0) return; mostrarPagina(paginaActual + 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
 form.addEventListener("change", actualizarProgreso);
 
-form.cuestionario.value = NOMBRE_CUESTIONARIO;
+form.cuestionario.value = typeof NOMBRE_CUESTIONARIO === "string" ? NOMBRE_CUESTIONARIO : "";
 renderPreguntas();
 document.getElementById("infoTotal").textContent = String(TOTAL);
 document.getElementById("infoPaginas").textContent = String(PAGINAS);
 document.getElementById("infoPorPagina").textContent = String(POR_PAGINA);
 mostrarPagina(0);
 reiniciarPanel();
+if (!CONFIG_OK) {
+  mostrarResultado("Falta configurar la página", ["Revisa el bloque CONFIGURACIÓN al final del archivo: las URLs de los flujos deben ir entre comillas."], "no-aprobado");
+  btnBuscar.disabled = true;
+}
 </script>
 </body>
 </html>
