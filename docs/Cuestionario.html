@@ -716,6 +716,11 @@ window.addEventListener("unload", enviarAlSalir);
 // Si el navegador restaura la página desde caché tras haber enviado, se recarga para no dejarla en un estado falso.
 window.addEventListener("pageshow", (e) => { if (e.persisted && enviadoAlSalir) location.reload(); });
 
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  enviar(false);
+});
+
 btnAnterior.addEventListener("click", () => { mostrarPagina(paginaActual - 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
 btnSiguiente.addEventListener("click", () => { if (pendientesPagina().length > 0) return; mostrarPagina(paginaActual + 1); window.scrollTo({ top: 0, behavior: "smooth" }); });
 form.addEventListener("change", actualizarProgreso);
