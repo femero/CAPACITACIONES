@@ -62,6 +62,9 @@
   /* Preguntas */
   .preguntas{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
   .preguntas.una{grid-template-columns:1fr}
+  .rotulo{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;padding-bottom:12px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);font-weight:bold}
+  .rotulo .ses{background:var(--blue);color:#fff;border-radius:3px;padding:3px 8px;letter-spacing:.08em}
+  .rotulo .cont{color:var(--gray);font-weight:normal}
   .col{display:flex;flex-direction:column;gap:20px}
   fieldset{border:0;padding:0;margin:0;min-width:0}
   .card.q{display:none;border:1px solid var(--line);border-radius:4px;padding:18px 20px;background:#fff}
@@ -207,7 +210,7 @@
     </div>
   </form>
 </main>
-<footer>© NTT DATA · Uso interno · <span id="version">Versión 3.3 · 26/11/2026 10:27</span></footer>
+<footer>© NTT DATA · Uso interno · <span id="version">Versión 3.4 · 26/11/2026 10:39</span></footer>
 
 <script>
 // ===== CONFIGURACIÓN (único bloque que debes editar) =====
@@ -218,7 +221,7 @@ var URL_CONSULTA = "https://default3048dc8743f041009acbae1971c793.95.environment
 var NOMBRE_CUESTIONARIO = "Cuestionario IA Engineering Chapter";
 </script>
 <script>
-console.info("Cuestionario versión 3.3 · 26/11/2026 10:27");
+console.info("Cuestionario versión 3.4 · 26/11/2026 10:39");
 const CONFIG_OK = typeof URL_FLUJO === "string" && typeof URL_CONSULTA === "string" &&
   typeof NOMBRE_CUESTIONARIO === "string" &&
   URL_FLUJO.indexOf("PEGA_AQUI") !== 0 && URL_CONSULTA.indexOf("PEGA_AQUI") !== 0;
@@ -413,6 +416,108 @@ const PREGUNTAS = [
     ]
   }
 ];
+const TEMAS = [
+ {
+  "s": "S2",
+  "t": "Prompting & Secure AI Engineering",
+  "c": "Prompting + Context Engineering"
+ },
+ {
+  "s": "S2",
+  "t": "Prompting & Secure AI Engineering",
+  "c": "Prompting + Context Engineering"
+ },
+ {
+  "s": "S2",
+  "t": "Prompting & Secure AI Engineering",
+  "c": "Secure AI Engineering"
+ },
+ {
+  "s": "S2",
+  "t": "Prompting & Secure AI Engineering",
+  "c": "Optimización + Refactor"
+ },
+ {
+  "s": "S2",
+  "t": "Prompting & Secure AI Engineering",
+  "c": "Secure AI Engineering"
+ },
+ {
+  "s": "S3",
+  "t": "Agent Skills, Templates & MCP - Parte 1",
+  "c": "Anatomía del Agent Skill"
+ },
+ {
+  "s": "S3",
+  "t": "Agent Skills, Templates & MCP - Parte 1",
+  "c": "Anatomía del Agent Skill"
+ },
+ {
+  "s": "S3",
+  "t": "Agent Skills, Templates & MCP - Parte 1",
+  "c": "Templates del nuevo SDLC"
+ },
+ {
+  "s": "S4",
+  "t": "Agent Skills, Templates & MCP - Parte 2",
+  "c": "Tool Calling"
+ },
+ {
+  "s": "S4",
+  "t": "Agent Skills, Templates & MCP - Parte 2",
+  "c": "MCP aplicado al SDLC"
+ },
+ {
+  "s": "S5",
+  "t": "SSD + Agentes - Parte 1",
+  "c": "OpenSpec"
+ },
+ {
+  "s": "S5",
+  "t": "SSD + Agentes - Parte 1",
+  "c": "Specify → Plan → Tasks → Validate (ciclo)"
+ },
+ {
+  "s": "S5",
+  "t": "SSD + Agentes - Parte 1",
+  "c": "OpenSpec"
+ },
+ {
+  "s": "S6",
+  "t": "SSD + Agentes - Parte 2",
+  "c": "Fundamentos de agentes"
+ },
+ {
+  "s": "S6",
+  "t": "SSD + Agentes - Parte 2",
+  "c": "Routing, Evaluator y HITL"
+ },
+ {
+  "s": "S2",
+  "t": "Prompting & Secure AI Engineering",
+  "c": "Docs + Unit Testing"
+ },
+ {
+  "s": "S2",
+  "t": "Prompting & Secure AI Engineering",
+  "c": "Secure AI Engineering"
+ },
+ {
+  "s": "S3",
+  "t": "Agent Skills, Templates & MCP - Parte 1",
+  "c": "Anatomía del Agent Skill"
+ },
+ {
+  "s": "S3",
+  "t": "Agent Skills, Templates & MCP - Parte 1",
+  "c": "Anatomía del Agent Skill"
+ },
+ {
+  "s": "S6",
+  "t": "SSD + Agentes - Parte 2",
+  "c": "Routing, Evaluator y HITL"
+ }
+];
 const POR_PAGINA = 1;
 const IZQ = Math.ceil(POR_PAGINA / 2); // preguntas de cada página que van en la columna izquierda
 const TOTAL = PREGUNTAS.length;
@@ -430,6 +535,13 @@ function renderPreguntas() {
     const card = document.createElement("div");
     card.className = "card q";
     card.dataset.bloque = String(Math.floor(i / POR_PAGINA));
+    const rot = document.createElement("div");
+    rot.className = "rotulo";
+    const ses = document.createElement("span"); ses.className = "ses"; ses.textContent = TEMAS[i].s;
+    const tem = document.createElement("span"); tem.textContent = TEMAS[i].t;
+    const con = document.createElement("span"); con.className = "cont"; con.textContent = "· " + TEMAS[i].c;
+    rot.appendChild(ses); rot.appendChild(tem); rot.appendChild(con);
+    card.appendChild(rot);
     const fs = document.createElement("fieldset");
     const lg = document.createElement("legend");
     const enun = document.createElement("span");
