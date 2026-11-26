@@ -410,6 +410,186 @@ const PREGUNTAS = [
       "BLOQUEAR: se detiene con un mensaje seguro porque toda zona gris es una violación clara.",
       "Reintentar: se vuelve a evaluar con el mismo criterio hasta obtener una respuesta concluyente."
     ]
+  },
+  {
+    "t": "Pregunta 1: Según el marco de indicaciones, ¿qué conjunto corresponde a los cinco elementos de una consigna?",
+    "o": [
+      "Rol, ejemplos, cadena de pensamiento, restricciones y formato.",
+      "Contexto, objetivo, restricciones, criterios y formato de salida.",
+      "Contexto, tarea, herramientas, presupuesto y audiencia.",
+      "Objetivo, alcance, riesgos, pruebas y entregables."
+    ]
+  },
+  {
+    "t": "Pregunta 2: Una consigna no entrega lo esperado y el equipo empieza a retocar el formato de salida y a añadir ejemplos. ¿Qué bloque conviene revisar primero?",
+    "o": [
+      "El formato de salida, porque es lo que más malentendidos evita.",
+      "Los ejemplos few-shot, porque enseñan el patrón entrada → salida.",
+      "El contexto, porque define el resto y sin él los objetivos se vuelven vagos.",
+      "El rol, porque cambia el tono, el rigor y los silencios de la IA."
+    ]
+  },
+  {
+    "t": "Pregunta 3: ¿Qué describe mejor el papel de REGLAS.md en el trabajo seguro con IA?",
+    "o": [
+      "Reúne reglas de seguridad y contratos que se mencionan al construir y sirven para auditar después; el humano sigue firmando antes del merge.",
+      "Reemplaza la revisión humana cuando la IA audita el código contra las reglas y no encuentra vulnerabilidades.",
+      "Guarda las consignas que funcionaron bien para reutilizarlas y evitar que la IA repita los mismos errores.",
+      "Se completa al cierre del sprint para declarar que el código generado cumple las políticas de seguridad."
+    ]
+  },
+  {
+    "t": "Pregunta 4: Un equipo pide a la IA que «mejore» un servicio y confunde dos tipos de cambio. ¿Cuál es la diferencia correcta entre refactor y optimización?",
+    "o": [
+      "El refactor reduce latencia y consumo de memoria; la optimización cambia la forma del código sin alterar el comportamiento.",
+      "El refactor exige medir una métrica antes y después; la optimización se valida con los tests existentes.",
+      "El refactor puede cambiar el comportamiento si mejora la legibilidad; la optimización conserva siempre las mismas entradas y salidas.",
+      "El refactor cambia la forma sin alterar el comportamiento y se valida con tests; la optimización mejora una métrica concreta y exige medición antes y después."
+    ]
+  },
+  {
+    "t": "Pregunta 5: Un endpoint generado por IA valida el cuerpo, aplica hashing y usa consultas parametrizadas, pero registra todo el cuerpo en el registro con correo electrónico y número de tarjeta. ¿Cuál es la acción más adecuada?",
+    "o": [
+      "Añadir la regla al archivo REGLAS.md, sanear u omitir los datos sensibles en los registros y volver a auditar el código.",
+      "Cambiar a un modelo más capaz para que deje de incluir datos sensibles en los mensajes de registro.",
+      "Documentar en el README que el registro es solo para depuración y que no se comparte con terceros.",
+      "Aceptar el comportamiento porque los datos permanecen dentro del perímetro de la entidad financiera."
+    ]
+  },
+  {
+    "t": "Pregunta 6: ¿Qué es una Habilidad de Agente?",
+    "o": [
+      "Una instrucción aislada que se escribe en el chat y desaparece al cerrar la conversación.",
+      "Una unidad de conocimiento y comportamiento reutilizable que declara cuándo se usa, qué necesita, qué entrega y cómo se valida.",
+      "Un modelo adicional entrenado con los documentos del equipo para responder preguntas del dominio.",
+      "Una especificación completa del producto que sustituye permisos, pruebas y revisión humana."
+    ]
+  },
+  {
+    "t": "Pregunta 7: Una Habilidad de Agente publicada recibe un nuevo parámetro opcional en su salida, sin romper el contrato existente. ¿Qué versión corresponde según SemVer?",
+    "o": [
+      "MAJOR: v2.0.0, porque toda modificación de la salida es incompatible.",
+      "PATCH: v1.0.1, porque el cambio no altera el propósito de la Habilidad.",
+      "MINOR: v1.1.0, porque es un cambio aditivo y compatible.",
+      "ARCHIVED: se retira la versión anterior y se publica sin número nuevo."
+    ]
+  },
+  {
+    "t": "Pregunta 8: ¿Cómo se relacionan una plantilla del SDLC y una Habilidad de Agente?",
+    "o": [
+      "Son sustitutos: si existe una plantilla, la Habilidad deja de ser necesaria en esa fase.",
+      "La Habilidad define la fase del ciclo y la plantilla aporta la lógica reutilizable del catálogo.",
+      "La plantilla reemplaza a la Habilidad cuando el cambio toca producción y requiere auditoría.",
+      "La plantilla es una Habilidad especializada por fase que selecciona Habilidades vigentes del catálogo y comparte un identificador de trazabilidad."
+    ]
+  },
+  {
+    "t": "Pregunta 9: Una herramienta de pagos se invoca dos veces con los mismos argumentos debido a un reintento. ¿Qué propiedad del diseño evita que la operación se duplique?",
+    "o": [
+      "Un tiempo de espera más largo por herramienta.",
+      "La idempotencia de la llamada.",
+      "Un backoff exponencial con más intentos.",
+      "Una condición de parada por número de pasos."
+    ]
+  },
+  {
+    "t": "Pregunta 10: Tres Habilidades de Agente y dos equipos necesitan consultar los mismos datos de saldos, con permisos separados y auditoría central. ¿Qué decisión es más adecuada?",
+    "o": [
+      "Exponer la capacidad mediante un servidor MCP, con mínimo privilegio y auditoría.",
+      "Duplicar la integración directa en cada Habilidad para no depender de un servidor común.",
+      "Resolverlo con una consigna libre más detallada que describa el formato de salida.",
+      "Crear una plantilla adicional por equipo y dejar los permisos en el código de cada Habilidad."
+    ]
+  },
+  {
+    "t": "Pregunta 11: ¿Qué caracteriza al desarrollo guiado por especificaciones (SDD)?",
+    "o": [
+      "Escribir consignas más extensas para que el modelo requiera menos revisiones.",
+      "Generar código primero y documentar la intención cuando el cambio ya está en producción.",
+      "Definir el cambio en especificaciones versionadas junto al código, con criterios verificables y evidencia de cumplimiento.",
+      "Reemplazar la especificación por una historia de usuario que se reescribe en cada sprint."
+    ]
+  },
+  {
+    "t": "Pregunta 12: En el pipeline Specify → Plan → Tasks → Validate, ¿qué pregunta responde cada etapa, en orden?",
+    "o": [
+      "¿Cómo?, ¿qué?, ¿evidencia?, ¿pasos?",
+      "¿Qué?, ¿pasos?, ¿cómo?, ¿evidencia?",
+      "¿Evidencia?, ¿qué?, ¿cómo?, ¿pasos?",
+      "¿Qué?, ¿cómo?, ¿pasos?, ¿evidencia?"
+    ]
+  },
+  {
+    "t": "Pregunta 13: En el desarrollo guiado por especificaciones, ¿qué artefactos produce OpenSpec para estructurar un cambio?",
+    "o": [
+      "Una consigna, un modelo y un conjunto de herramientas por cada historia de usuario.",
+      "Proposal, specs, design y tasks versionados, con transiciones explícitas.",
+      "Un tablero Kanban con historias, criterios y Definition of Done.",
+      "Un pipeline de CI con pruebas, despliegue y monitoreo."
+    ]
+  },
+  {
+    "t": "Pregunta 14: Un agente responde, ejecuta herramientas y consume pasos sin cerrar la tarea. Según la anatomía de un agente, ¿qué componente es más probable que falle?",
+    "o": [
+      "El modelo, porque no interpreta el contexto de la tarea.",
+      "Las herramientas, porque devuelven resultados ruidosos.",
+      "El contexto, porque está saturado de información.",
+      "El bucle, porque no tiene criterio de éxito ni condición de salida."
+    ]
+  },
+  {
+    "t": "Pregunta 15: En un flujo con enrutamiento, agente y evaluador, ¿dónde debe colocarse la intervención humana (HITL)?",
+    "o": [
+      "En puntos concretos donde el costo del error es alto o la acción es irreversible, no en todas las solicitudes.",
+      "En cada solicitud del flujo, para garantizar que ninguna salida llegue al usuario sin revisión.",
+      "Solo al cierre del proyecto, cuando el equipo revisa los resultados acumulados del agente.",
+      "Después del merge, para que el humano valide el cambio cuando ya está en producción."
+    ]
+  },
+  {
+    "t": "Pregunta 16: Un equipo presume de alta cobertura, pero sus pruebas no tocan los casos que más importan al negocio. ¿Cuál es el antídoto?",
+    "o": [
+      "Subir el umbral de cobertura hasta que el indicador sea competitivo.",
+      "Pedir a la IA que genere más pruebas sobre las mismas funciones.",
+      "Listar los casos críticos en TESTING.md antes de pedir las pruebas.",
+      "Medir el tiempo de ejecución de la suite y reducirlo."
+    ]
+  },
+  {
+    "t": "Pregunta 17: Una IA genera un endpoint que arma la consulta SQL concatenando el valor recibido en un parámetro. ¿Qué patrón inseguro describe esa situación?",
+    "o": [
+      "Consultas a base de datos construidas mal.",
+      "Permisos demasiado amplios.",
+      "Secretos en el código.",
+      "Funciones en el lugar equivocado."
+    ]
+  },
+  {
+    "t": "Pregunta 18: Un equipo retira una Habilidad de Agente del catálogo, pero debe conservar la evidencia histórica para auditoría regulatoria. ¿En qué estado queda?",
+    "o": [
+      "DRAFT",
+      "ACTIVE",
+      "ARCHIVED",
+      "SUNSET"
+    ]
+  },
+  {
+    "t": "Pregunta 19: Un equipo repite la misma instrucción más de tres veces y necesita comparar resultados entre equipos. ¿Qué conviene hacer?",
+    "o": [
+      "Mantener una consigna libre y ajustarla en cada ejecución.",
+      "Documentar la instrucción en el README del repositorio.",
+      "Delegar la decisión al modelo en cada ejecución.",
+      "Crear una Habilidad de Agente versionada y auditable."
+    ]
+  },
+  {
+    "t": "Pregunta 20: Antes de dejar avanzar la salida de un agente, un equipo debe definir cómo evaluarla. ¿Qué modo de evaluador se prioriza por defecto y por qué?",
+    "o": [
+      "El basado en modelo, porque capta matices que una prueba objetiva no puede medir.",
+      "El determinístico, porque es rápido, barato, automatizable y explicable con pruebas objetivas.",
+      "El juicio humano, porque ninguna máquina puede validar criterios de negocio.",
+      "El muestreo aleatorio, porque reduce el costo sin perder cobertura."
+    ]
   }
 ];
 const POR_PAGINA = 2;
