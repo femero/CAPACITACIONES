@@ -206,7 +206,7 @@
     </div>
   </form>
 </main>
-<footer>© NTT DATA · Uso interno · <span id="version">Versión 3.1 · 26/11/2026 09:36</span></footer>
+<footer>© NTT DATA · Uso interno · <span id="version">Versión 3.2 · 26/11/2026 10:16</span></footer>
 
 <script>
 // ===== CONFIGURACIÓN (único bloque que debes editar) =====
@@ -217,7 +217,7 @@ var URL_CONSULTA = "https://default3048dc8743f041009acbae1971c793.95.environment
 var NOMBRE_CUESTIONARIO = "Cuestionario IA Engineering Chapter";
 </script>
 <script>
-console.info("Cuestionario versión 3.1 · 26/11/2026 09:36");
+console.info("Cuestionario versión 3.2 · 26/11/2026 10:16");
 const CONFIG_OK = typeof URL_FLUJO === "string" && typeof URL_CONSULTA === "string" &&
   typeof NOMBRE_CUESTIONARIO === "string" &&
   URL_FLUJO.indexOf("PEGA_AQUI") !== 0 && URL_CONSULTA.indexOf("PEGA_AQUI") !== 0;
@@ -232,7 +232,7 @@ const panel = document.getElementById("resultado");
 
 const PREGUNTAS = [
   {
-    "t": "De acuerdo con el framework de prompting del Día 1, ¿qué conjunto corresponde a los cinco elementos de un prompt?",
+    "t": "Según el marco de indicaciones, ¿qué conjunto corresponde a los cinco elementos de una consigna?",
     "o": [
       "Rol, ejemplos, cadena de pensamiento, restricciones y formato.",
       "Contexto, objetivo, restricciones, criterios y formato de salida.",
@@ -241,10 +241,10 @@ const PREGUNTAS = [
     ]
   },
   {
-    "t": "Un prompt no entrega lo esperado y el equipo empieza a retocar el formato de salida y a añadir ejemplos. Según el material, ¿qué bloque conviene revisar primero?",
+    "t": "Una consigna no entrega lo esperado y el equipo empieza a retocar el formato de salida y a añadir ejemplos. ¿Qué bloque conviene revisar primero?",
     "o": [
       "El formato de salida, porque es lo que más malentendidos evita.",
-      "Los ejemplos few-shot, porque enseñan el patrón input → output.",
+      "Los ejemplos few-shot, porque enseñan el patrón entrada → salida.",
       "El contexto, porque define el resto y sin él los objetivos se vuelven vagos.",
       "El rol, porque cambia el tono, el rigor y los silencios de la IA."
     ]
@@ -254,7 +254,7 @@ const PREGUNTAS = [
     "o": [
       "Reúne reglas de seguridad y contratos que se mencionan al construir y sirven para auditar después; el humano sigue firmando antes del merge.",
       "Reemplaza la revisión humana cuando la IA audita el código contra las reglas y no encuentra vulnerabilidades.",
-      "Guarda los prompts que funcionaron bien para reutilizarlos y evitar que la IA repita los mismos errores.",
+      "Guarda las consignas que funcionaron bien para reutilizarlas y evitar que la IA repita los mismos errores.",
       "Se completa al cierre del sprint para declarar que el código generado cumple las políticas de seguridad."
     ]
   },
@@ -263,21 +263,21 @@ const PREGUNTAS = [
     "o": [
       "El refactor reduce latencia y consumo de memoria; la optimización cambia la forma del código sin alterar el comportamiento.",
       "El refactor exige medir una métrica antes y después; la optimización se valida con los tests existentes.",
-      "El refactor puede cambiar el comportamiento si mejora la legibilidad; la optimización conserva siempre los mismos inputs y outputs.",
+      "El refactor puede cambiar el comportamiento si mejora la legibilidad; la optimización conserva siempre las mismas entradas y salidas.",
       "El refactor cambia la forma sin alterar el comportamiento y se valida con tests; la optimización mejora una métrica concreta y exige medición antes y después."
     ]
   },
   {
-    "t": "Un endpoint generado por IA valida el body, aplica hashing y usa consultas parametrizadas, pero registra en el log el body completo con email y número de tarjeta. ¿Cuál es la acción más alineada con el Día 1?",
+    "t": "Un endpoint generado por IA valida el cuerpo, aplica hashing y usa consultas parametrizadas, pero registra todo el cuerpo en el registro con correo electrónico y número de tarjeta. ¿Cuál es la acción más adecuada?",
     "o": [
-      "Añadir la regla al archivo REGLAS.md, sanear u omitir los datos sensibles en los logs y volver a auditar el código.",
-      "Cambiar a un modelo más capaz para que deje de incluir datos sensibles en los mensajes de log.",
-      "Documentar en el README que el log es solo para depuración y que no se comparte con terceros.",
+      "Añadir la regla al archivo REGLAS.md, sanear u omitir los datos sensibles en los registros y volver a auditar el código.",
+      "Cambiar a un modelo más capaz para que deje de incluir datos sensibles en los mensajes de registro.",
+      "Documentar en el README que el registro es solo para depuración y que no se comparte con terceros.",
       "Aceptar el comportamiento porque los datos permanecen dentro del perímetro de la entidad financiera."
     ]
   },
   {
-    "t": "¿Qué es un Agent Skill según el Día 2?",
+    "t": "¿Qué es una Habilidad de Agente?",
     "o": [
       "Una instrucción aislada que se escribe en el chat y desaparece al cerrar la conversación.",
       "Una unidad de conocimiento y comportamiento reutilizable que declara cuándo se usa, qué necesita, qué entrega y cómo se valida.",
@@ -286,48 +286,48 @@ const PREGUNTAS = [
     ]
   },
   {
-    "t": "Un Skill publicado recibe un nuevo parámetro opcional en su salida, sin romper el contrato existente. ¿Qué versión corresponde según SemVer?",
+    "t": "Una Habilidad de Agente publicada recibe un nuevo parámetro opcional en su salida, sin romper el contrato existente. ¿Qué versión corresponde según SemVer?",
     "o": [
       "MAJOR: v2.0.0, porque toda modificación de la salida es incompatible.",
-      "PATCH: v1.0.1, porque el cambio no altera el propósito del Skill.",
+      "PATCH: v1.0.1, porque el cambio no altera el propósito de la Habilidad.",
       "MINOR: v1.1.0, porque es un cambio aditivo y compatible.",
       "ARCHIVED: se retira la versión anterior y se publica sin número nuevo."
     ]
   },
   {
-    "t": "¿Cómo se relacionan un Template SDLC y un Agent Skill?",
+    "t": "¿Cómo se relacionan una plantilla del SDLC y una Habilidad de Agente?",
     "o": [
-      "Son sustitutos: si existe un Template, el Skill deja de ser necesario en esa fase.",
-      "El Skill define la fase del ciclo y el Template aporta la lógica reutilizable del catálogo.",
-      "El Template reemplaza al Skill cuando el cambio toca producción y requiere auditoría.",
-      "El Template es un Skill especializado por fase que selecciona Skills vigentes del catálogo y comparte un identificador de trazabilidad."
+      "Son sustitutos: si existe una plantilla, la Habilidad deja de ser necesaria en esa fase.",
+      "La Habilidad define la fase del ciclo y la plantilla aporta la lógica reutilizable del catálogo.",
+      "La plantilla reemplaza a la Habilidad cuando el cambio toca producción y requiere auditoría.",
+      "La plantilla es una Habilidad especializada por fase que selecciona Habilidades vigentes del catálogo y comparte un identificador de trazabilidad."
     ]
   },
   {
-    "t": "Una tool de pagos se invoca dos veces con los mismos argumentos debido a un reintento. ¿Qué propiedad del diseño evita que la operación se duplique?",
+    "t": "Una herramienta de pagos se invoca dos veces con los mismos argumentos debido a un reintento. ¿Qué propiedad del diseño evita que la operación se duplique?",
     "o": [
-      "Un timeout más largo por herramienta.",
+      "Un tiempo de espera más largo por herramienta.",
       "La idempotencia de la llamada.",
       "Un backoff exponencial con más intentos.",
       "Una condición de parada por número de pasos."
     ]
   },
   {
-    "t": "Tres Skills y dos equipos necesitan consultar los mismos datos de saldos, con permisos separados y auditoría central. ¿Qué decisión recomienda el material?",
+    "t": "Tres Habilidades de Agente y dos equipos necesitan consultar los mismos datos de saldos, con permisos separados y auditoría central. ¿Qué decisión es más adecuada?",
     "o": [
       "Exponer la capacidad mediante un servidor MCP, con mínimo privilegio y auditoría.",
-      "Duplicar la integración directa en cada Skill para no depender de un servidor común.",
-      "Resolverlo con un prompt libre más detallado que describa el formato de salida.",
-      "Crear un Template adicional por equipo y dejar los permisos en el código de cada Skill."
+      "Duplicar la integración directa en cada Habilidad para no depender de un servidor común.",
+      "Resolverlo con una consigna libre más detallada que describa el formato de salida.",
+      "Crear una plantilla adicional por equipo y dejar los permisos en el código de cada Habilidad."
     ]
   },
   {
-    "t": "¿Qué caracteriza a Spec-Driven Development (SDD)?",
+    "t": "¿Qué caracteriza al desarrollo guiado por especificaciones (SDD)?",
     "o": [
-      "Escribir prompts más extensos para que el modelo requiera menos revisiones.",
+      "Escribir consignas más extensas para que el modelo requiera menos revisiones.",
       "Generar código primero y documentar la intención cuando el cambio ya está en producción.",
-      "Definir el cambio en specs versionadas junto al código, con criterios verificables y evidencia de cumplimiento.",
-      "Reemplazar la spec por una historia de usuario que se reescribe en cada sprint."
+      "Definir el cambio en especificaciones versionadas junto al código, con criterios verificables y evidencia de cumplimiento.",
+      "Reemplazar la especificación por una historia de usuario que se reescribe en cada sprint."
     ]
   },
   {
@@ -340,25 +340,25 @@ const PREGUNTAS = [
     ]
   },
   {
-    "t": "¿Cuál es el rol de la Constitution frente a OpenSpec y Spec Kit?",
+    "t": "En el desarrollo guiado por especificaciones, ¿qué artefactos produce OpenSpec para estructurar un cambio?",
     "o": [
-      "La Constitution genera las tareas y OpenSpec y Spec Kit definen las reglas de seguridad.",
-      "La Constitution define qué está permitido; OpenSpec y Spec Kit organizan cómo se pide y se ejecuta el cambio.",
-      "La Constitution es el repositorio de prompts y OpenSpec y Spec Kit son los agentes que los ejecutan.",
-      "La Constitution reemplaza a OpenSpec cuando el cambio toca contratos de autenticación."
+      "Una consigna, un modelo y un conjunto de herramientas por cada historia de usuario.",
+      "Proposal, specs, design y tasks versionados, con transiciones explícitas.",
+      "Un tablero Kanban con historias, criterios y Definition of Done.",
+      "Un pipeline de CI con pruebas, despliegue y monitoreo."
     ]
   },
   {
-    "t": "Un agente responde, ejecuta tools y consume pasos sin cerrar la tarea. Según la anatomía del Día 3, ¿qué componente falla con mayor probabilidad?",
+    "t": "Un agente responde, ejecuta herramientas y consume pasos sin cerrar la tarea. Según la anatomía de un agente, ¿qué componente es más probable que falle?",
     "o": [
       "El modelo, porque no interpreta el contexto de la tarea.",
-      "Las tools, porque devuelven resultados ruidosos.",
+      "Las herramientas, porque devuelven resultados ruidosos.",
       "El contexto, porque está saturado de información.",
-      "El loop, porque no tiene criterio de éxito ni condición de salida."
+      "El bucle, porque no tiene criterio de éxito ni condición de salida."
     ]
   },
   {
-    "t": "En un flujo con routing, agente y evaluator, ¿dónde debe colocarse el HITL según el material?",
+    "t": "En un flujo con enrutamiento, agente y evaluador, ¿dónde debe colocarse la intervención humana (HITL)?",
     "o": [
       "En puntos concretos donde el costo del error es alto o la acción es irreversible, no en todas las solicitudes.",
       "En cada solicitud del flujo, para garantizar que ninguna salida llegue al usuario sin revisión.",
@@ -367,48 +367,48 @@ const PREGUNTAS = [
     ]
   },
   {
-    "t": "¿Cuál es la diferencia central entre CrewAI y LangGraph según el Día 4?",
+    "t": "Un equipo presume de alta cobertura, pero sus pruebas no tocan los casos que más importan al negocio. ¿Cuál es el antídoto?",
     "o": [
-      "CrewAI modela el flujo como un grafo con estado y LangGraph reparte tareas entre roles.",
-      "CrewAI solo funciona con un agente y LangGraph es obligatorio para usar herramientas.",
-      "CrewAI orquesta un equipo donde un agente decide a quién despertar; LangGraph dibuja el recorrido con nodos, aristas y estado.",
-      "CrewAI persiste el estado con checkpoints y LangGraph se limita a generar respuestas de texto."
+      "Subir el umbral de cobertura hasta que el indicador sea competitivo.",
+      "Pedir a la IA que genere más pruebas sobre las mismas funciones.",
+      "Listar los casos críticos en TESTING.md antes de pedir las pruebas.",
+      "Medir el tiempo de ejecución de la suite y reducirlo."
     ]
   },
   {
-    "t": "Un caso bancario requiere que un manager reciba la consulta, la descomponga y asigne subtareas según lo que va apareciendo. ¿Qué proceso de crew corresponde?",
+    "t": "Una IA genera un endpoint que arma la consulta SQL concatenando el valor recibido en un parámetro. ¿Qué patrón inseguro describe esa situación?",
     "o": [
-      "Sequential, porque cada tarea termina antes de que empiece la siguiente.",
-      "Hierarchical, porque un manager decide qué subtarea va primero y revisa el resultado.",
-      "Consensus, porque varios agentes proponen en paralelo y un agregador decide.",
-      "Delegation, porque el manager delega todas las tareas sin revisar el resultado."
+      "Consultas a base de datos construidas mal.",
+      "Permisos demasiado amplios.",
+      "Secretos en el código.",
+      "Funciones en el lugar equivocado."
     ]
   },
   {
-    "t": "¿Para qué sirve un checkpoint en LangGraph?",
+    "t": "Un equipo retira una Habilidad de Agente del catálogo, pero debe conservar la evidencia histórica para auditoría regulatoria. ¿En qué estado queda?",
     "o": [
-      "Para compilar el grafo antes de ejecutarlo y detectar nodos sin conexión.",
-      "Para definir el rol, objetivo y backstory de cada agente del equipo.",
-      "Para sustituir las tools externas por respuestas almacenadas en memoria.",
-      "Para guardar el estado en cada paso y permitir reanudar, auditar y pausar por aprobación humana."
+      "DRAFT",
+      "ACTIVE",
+      "ARCHIVED",
+      "SUNSET"
     ]
   },
   {
-    "t": "¿Cuáles son las cuatro métricas mínimas que el harness debe exponer según el Día 4?",
+    "t": "Un equipo repite la misma instrucción más de tres veces y necesita comparar resultados entre equipos. ¿Qué conviene hacer?",
     "o": [
-      "Cobertura de código, deuda técnica, throughput y disponibilidad.",
-      "Precisión del modelo, tamaño del contexto, número de tools y temperatura.",
-      "Evaluación, observabilidad, coste y latencia.",
-      "Número de agentes, pasos por turno, reintentos y tokens por prompt."
+      "Mantener una consigna libre y ajustarla en cada ejecución.",
+      "Documentar la instrucción en el README del repositorio.",
+      "Delegar la decisión al modelo en cada ejecución.",
+      "Crear una Habilidad de Agente versionada y auditable."
     ]
   },
   {
-    "t": "Un guardrail recibe una solicitud en zona gris y de alto impacto. ¿Qué decisión corresponde y por qué?",
+    "t": "Antes de dejar avanzar la salida de un agente, un equipo debe definir cómo evaluarla. ¿Qué modo de evaluador se prioriza por defecto y por qué?",
     "o": [
-      "ESCALAR: decide una persona, el checkpointer pausa el grafo y el flujo se reanuda con su decisión.",
-      "PASS: la solicitud continúa y se registra en la traza sin intervención humana.",
-      "BLOQUEAR: se detiene con un mensaje seguro porque toda zona gris es una violación clara.",
-      "Reintentar: se vuelve a evaluar con el mismo criterio hasta obtener una respuesta concluyente."
+      "El basado en modelo, porque capta matices que una prueba objetiva no puede medir.",
+      "El determinístico, porque es rápido, barato, automatizable y explicable con pruebas objetivas.",
+      "El juicio humano, porque ninguna máquina puede validar criterios de negocio.",
+      "El muestreo aleatorio, porque reduce el costo sin perder cobertura."
     ]
   }
 ];
