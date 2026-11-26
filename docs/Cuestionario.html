@@ -61,6 +61,7 @@
 
   /* Preguntas */
   .preguntas{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  .preguntas.una{grid-template-columns:1fr}
   .col{display:flex;flex-direction:column;gap:20px}
   fieldset{border:0;padding:0;margin:0;min-width:0}
   .card.q{display:none;border:1px solid var(--line);border-radius:4px;padding:18px 20px;background:#fff}
@@ -162,7 +163,7 @@
         <ol>
           <li><span>Ingresa tu código de empleado.</span></li>
           <li><span>Pulsa <strong>Buscar</strong> para validar tus datos.</span></li>
-          <li><span>Responde las preguntas; se muestran <strong><span id="infoPorPagina2">2</span> por página</strong>.</span></li>
+          <li><span>Responde las preguntas; se muestran <strong><span id="infoPorPagina2">1</span> por página</strong>.</span></li>
           <li><span>En la última página, pulsa <strong>Enviar</strong>.</span></li>
         </ol>
       </div>
@@ -170,8 +171,8 @@
         <h3>Sobre el cuestionario</h3>
         <dl>
           <dt>Preguntas</dt><dd id="infoTotal">20</dd>
-          <dt>Páginas</dt><dd id="infoPaginas">10</dd>
-          <dt>Preguntas por página</dt><dd id="infoPorPagina">2</dd>
+          <dt>Páginas</dt><dd id="infoPaginas">20</dd>
+          <dt>Preguntas por página</dt><dd id="infoPorPagina">1</dd>
           <dt>Tipo de respuesta</dt><dd>Opción única</dd>
           <dt>Intentos por persona</dt><dd>1</dd>
         </dl>
@@ -206,7 +207,7 @@
     </div>
   </form>
 </main>
-<footer>© NTT DATA · Uso interno · <span id="version">Versión 3.2 · 26/11/2026 10:16</span></footer>
+<footer>© NTT DATA · Uso interno · <span id="version">Versión 3.3 · 26/11/2026 10:27</span></footer>
 
 <script>
 // ===== CONFIGURACIÓN (único bloque que debes editar) =====
@@ -217,7 +218,7 @@ var URL_CONSULTA = "https://default3048dc8743f041009acbae1971c793.95.environment
 var NOMBRE_CUESTIONARIO = "Cuestionario IA Engineering Chapter";
 </script>
 <script>
-console.info("Cuestionario versión 3.2 · 26/11/2026 10:16");
+console.info("Cuestionario versión 3.3 · 26/11/2026 10:27");
 const CONFIG_OK = typeof URL_FLUJO === "string" && typeof URL_CONSULTA === "string" &&
   typeof NOMBRE_CUESTIONARIO === "string" &&
   URL_FLUJO.indexOf("PEGA_AQUI") !== 0 && URL_CONSULTA.indexOf("PEGA_AQUI") !== 0;
@@ -412,7 +413,7 @@ const PREGUNTAS = [
     ]
   }
 ];
-const POR_PAGINA = 2;
+const POR_PAGINA = 1;
 const IZQ = Math.ceil(POR_PAGINA / 2); // preguntas de cada página que van en la columna izquierda
 const TOTAL = PREGUNTAS.length;
 const PAGINAS = Math.ceil(TOTAL / POR_PAGINA);
@@ -728,6 +729,7 @@ btnSiguiente.addEventListener("click", () => { if (pendientesPagina().length > 0
 form.addEventListener("change", actualizarProgreso);
 
 form.cuestionario.value = typeof NOMBRE_CUESTIONARIO === "string" ? NOMBRE_CUESTIONARIO : "";
+if (POR_PAGINA === 1) document.querySelector(".preguntas").classList.add("una");
 renderPreguntas();
 document.getElementById("infoTotal").textContent = String(TOTAL);
 document.getElementById("infoPaginas").textContent = String(PAGINAS);
